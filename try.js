@@ -155,12 +155,23 @@ class Trapezoid {
 }
 
 function onePass(points) {
+    let events = [];
     // 按照y坐标升序排列，屏幕方向从上到下
     let indices = [...Array(points.length).keys()];
     indices.sort((a, b) => points[a].y - points[b].y);
 
     let sweepline = []; // 扫描线，用于存放四边形
     let output = []; // 存放切出来的多边形（多边形的形式是 point array）
+
+    function generateEvent(point, name) {
+        return {
+            'event_type': name,
+            'sweepline': point.y,
+            'outputs': output.map(ps => ({'points': ps.map(p => ({'x': p.x, 'y': p.y}))})),
+            'trapezoids': sweepline.map(t => ({'helper': {'x': t.helper.x, 'y': t.helper.y}, 'points': t.chain.map(p => ({'x': p.x, 'y': p.y}))}))
+        };
+    }
+
     for(let i = 0; i < indices.length; ++i)
     {
         // in_ts 表示包含p的四边形 
@@ -178,6 +189,7 @@ function onePass(points) {
         if(in_ts.length === 0)
         {
             sweepline.push(new Trapezoid(p, prev, next));
+            events.push(generateEvent(p, 'insert'));
         }
         else if(in_ts.length === 1)
         {
@@ -187,20 +199,24 @@ function onePass(points) {
                 sweepline.splice(t_index, 1);
                 t.chain.splice(0, 1);
                 output.push(t.chain);
+                events.push(generateEvent(p, 'output'));
             }
             else if(point_equal(p, t.head))
             {// 是左边的虚顶点
                 t.helper = p;
                 t.chain.splice(0, 0, (prev.y > next.y ? prev : next));
+                events.push(generateEvent(p, 'left'));
             }
             else if(point_equal(p, t.tail))
             {// 是右边的虚顶点
                 t.helper = p;
                 t.chain.push(prev.y > next.y ? prev : next);
+                events.push(generateEvent(p, 'right'));
             }else{
                 // 在四边形内部，该split了
                 let [t1, t2] = t.split(p, next, prev);
                 sweepline.splice(t_index, 1, t1, t2);
+                events.push(generateEvent(p, 'split'));
             }
         }
         else if(in_ts.length === 2)
@@ -212,23 +228,24 @@ function onePass(points) {
             let s = new Trapezoid();
             s.merge(t1, t2);
             sweepline.push(s);
+            events.push(generateEvent(p, 'merge'));
         }
     }
-    return output;
+    return [output, events];
 }
 
 function MonotoneDecomp(points) {
-    let output = onePass(points);
+    let [output, events] = onePass(points);
     let answer = [];
     output.forEach(t1 => {
-        onePass(t1.map(negateP)).forEach(t2 => {
+        onePass(t1.map(negateP))[0].forEach(t2 => {
             answer.push(t2.map(negateP));
         });
     });
-    return answer;
+    return [answer, events];
 }
 
-let answer = MonotoneDecomp(points);
+let [answer, events] = MonotoneDecomp(points); // 算法代码到此结束
 
 answer.forEach(each => {
     let t = new Trapezoid();
