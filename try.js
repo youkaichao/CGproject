@@ -80,19 +80,6 @@ function negateP(p) {
 }
 
 
-function searchPoint(points, func)
-{
-    for(let i = 0; i < points.length; ++i)
-    {
-        if(func(points[i]))
-        {
-            return i;
-        }
-    }
-    return -1;
-}
-
-
 class Trapezoid {
     constructor(vertex=null, prev=null, next=null) {
         if(vertex === null)
@@ -149,7 +136,7 @@ class Trapezoid {
     split(p, prev, next)
     {
         let t1 = new Trapezoid(), t2 = new Trapezoid();
-        let index = searchPoint(this.chain, point => point_equal(point, this.helper));
+        let index = [...Array(this.chain.length).keys()].filter(i => point_equal(this.helper, this.chain[i]))[0];
 
         let [left, right] = [prev, next];
         if(toLeft(p, prev, next) < 0)
@@ -177,15 +164,7 @@ function onePass(points) {
         // in_ts 表示包含p的四边形 
         let index = indices[i];
         let p = points[index];
-        let in_ts = [];
-        for(let j = 0; j < sweepline.length; ++j)
-        {
-            let t = sweepline[j];
-            if(t.in_test(p))
-            {
-                in_ts.push([t, j]);
-            }
-        }
+        let in_ts = sweepline.map((v, i) => [v, i]).filter(e => e[0].in_test(p));
 
         // 取出p两边的点
         let prev = (index + points.length - 1) % points.length;
