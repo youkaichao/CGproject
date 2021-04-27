@@ -34,6 +34,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 ctx.fillStyle = 'red';
 
+// 顶点文字
 for(let i = 0; i < N; ++i)
 {
     ctx.strokeText(`[${i}]`, points[i].x + 5, points[i].y - 5);
@@ -42,6 +43,7 @@ for(let i = 0; i < N; ++i)
 
 drawPoly(ctx, points);
 
+// 顶点方块
 ctx.fillStyle = 'blue';
 ctx.fillRect(500-2.5, 500-2.5, 5, 5);
 for(let i = 0; i < N; ++i)
