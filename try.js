@@ -160,7 +160,7 @@ function onePass(points) {
     indices.sort((a, b) => points[a].y - points[b].y);
 
     let sweepline = []; // 扫描线，用于存放四边形
-    let output = []; // 存放切出来的多边形
+    let output = []; // 存放切出来的多边形（多边形的形式是 point array）
     for(let i = 0; i < indices.length; ++i)
     {
         // in_ts 表示包含p的四边形 
@@ -186,7 +186,7 @@ function onePass(points) {
             {// 四边形封闭了
                 sweepline.splice(t_index, 1);
                 t.chain.splice(0, 1);
-                output.push(t);
+                output.push(t.chain);
             }
             else if(point_equal(p, t.head))
             {// 是左边的虚顶点
@@ -221,8 +221,8 @@ function MonotoneDecomp(points) {
     let output = onePass(points);
     let answer = [];
     output.forEach(t1 => {
-        onePass(t1.chain.map(negateP)).forEach(t2 => {
-            answer.push(t2.chain.map(negateP));
+        onePass(t1.map(negateP)).forEach(t2 => {
+            answer.push(t2.map(negateP));
         });
     });
     return answer;
