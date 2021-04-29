@@ -261,17 +261,14 @@ function TriangulatingMonotonePolygon(points) {
     let output = []; // 存放切出来的三角形（三角形的形式是 point array）
     let events = [];
 
-    function generateEvent(point, name, c, t, s, b) {
+    function generateEvent(point, name, c, stack) {
         return {
             'event_type': name,
             'outputs': output.map(ps => ({'points': ps.map(p => ({'x': p.x, 'y': p.y, 'i': p.i}))})),
             'c': {'x': c.x, 'y': c.y, 'i': c.i}, // the current vertex
-            't': {'x': t.x, 'y': t.y, 'i': t.i}, // the top vertex of stack
-            's': {'x': s.x, 'y': s.y, 'i': s.i}, // the secondary top of stack
-            'b': {'x': b.x, 'y': b.y, 'i': b.i}, // the bottom of stack
+            'stack': stack.map(p => ({'x': p.x, 'y': p.y, 'i': p.i})),
         };
     }
-
 
     // TODO handle same y coordinates
     let lowest = 0, highest = 0;
@@ -291,19 +288,20 @@ function TriangulatingMonotonePolygon(points) {
     let stack = [];
     stack.push(points[0]);
     stack.push(points[1]);
+    events.push(generateEvent(output, "Init", points[1], stack));
     for (let i=2; i<points.length; i++) {
         let c = points[i], t = stack[stack.length-1], s = stack[stack.length-2], b = stack[0];
         if (c.position === t.position) { // Case A: c lies on the same chain as t
             if (isReflex(s, t, c)) { // t is reflex
                 stack.push(c);
-                events.push(generateEvent(points, 'Case A1: Same Side + Reflex', c, t, s, b));
+                events.push(generateEvent(points, 'Case A1: Same Side + Reflex', c, stack));
             } else { // t is convex
                 while (true) {
                     let s = stack[stack.length-2],
                         t = stack[stack.length-1];
                     output.push([c, t, s]);
-                    events.push(generateEvent(output, "Case A2: Same Side + Convex", c, t, s, b));
                     stack.pop();
+                    events.push(generateEvent(output, "Case A2: Same Side + Convex (chop triangle)", c, stack));
                     s = stack[stack.length-2];
                     t = stack[stack.length-1];
                     if (stack.length === 1 || isReflex(s, t, c)) {
@@ -311,6 +309,7 @@ function TriangulatingMonotonePolygon(points) {
                     }
                 }
                 stack.push(c);
+                events.push(generateEvent(output, "Case A2: Same Side + Convex (reinit stack)", c, stack));
             }
         } else { // Case B: c lies on the opposite chain of t
             let top = t;
@@ -318,12 +317,13 @@ function TriangulatingMonotonePolygon(points) {
                 let s = stack[stack.length-2],
                     t = stack[stack.length-1];
                 output.push([c, t, s]);
-                events.push(generateEvent(output, "Case B: Opposite Side", c, t, s, b));
                 stack.pop();
+                events.push(generateEvent(output, "Case B: Opposite Side (chop triangle)", c, stack));
             }
             stack.pop();
             stack.push(top);
             stack.push(c);
+            events.push(generateEvent(output, "Case B: Opposite Side (reinit stack)", c, stack));
         }
     }
     return [output, events];
@@ -342,4 +342,5 @@ answer.forEach(each => {
     triangulations.forEach(each => {
         drawPoly(ctx, each, 'blue');
     });
+    console.log(events);
 });
