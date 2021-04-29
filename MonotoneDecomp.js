@@ -2,7 +2,9 @@ width = 1000;
 height = 1000;
 center = 500;
 
-function drawPoly(ctx, points) {
+function drawPoly(ctx, points, color='red') {
+    ctx.strokeStyle = color;
+
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     for(let i = 1; i < points.length; ++i)
@@ -245,10 +247,99 @@ function MonotoneDecomp(points) {
     return [answer, events];
 }
 
-let [answer, events] = MonotoneDecomp(points); // 算法代码到此结束
+function isReflex(s, t, c) {
+    // TODO handle collinear
+    if (c.position === "left") {
+        return toLeft(s, t, c) === -1;
+    } else {
+        return toLeft(s, t, c) === 1;
+    }
+}
+
+function TriangulatingMonotonePolygon(points) {
+    points = Object.assign([], points);
+    let output = []; // 存放切出来的三角形（三角形的形式是 point array）
+    let events = [];
+
+    function generateEvent(point, name, c, t, s, b) {
+        return {
+            'event_type': name,
+            'outputs': output.map(ps => ({'points': ps.map(p => ({'x': p.x, 'y': p.y, 'i': p.i}))})),
+            'c': {'x': c.x, 'y': c.y, 'i': c.i}, // the current vertex
+            't': {'x': t.x, 'y': t.y, 'i': t.i}, // the top vertex of stack
+            's': {'x': s.x, 'y': s.y, 'i': s.i}, // the secondary top of stack
+            'b': {'x': b.x, 'y': b.y, 'i': b.i}, // the bottom of stack
+        };
+    }
+
+
+    // TODO handle same y coordinates
+    let lowest = 0, highest = 0;
+    for (let i = 1; i < points.length; i++) {
+        if (points[i].y < points[lowest].y) lowest = i;
+        if (points[i].y > points[highest].y) highest = i;
+    }
+    for (let i = lowest; i !== highest; i = (i+1) % points.length) {
+        points[i].position = "right";
+    }
+    for (let i = highest; i !== lowest; i = (i+1) % points.length) {
+        points[i].position = "left";
+    }
+
+    points.sort((a, b) => a.y - b.y);
+
+    let stack = [];
+    stack.push(points[0]);
+    stack.push(points[1]);
+    for (let i=2; i<points.length; i++) {
+        let c = points[i], t = stack[stack.length-1], s = stack[stack.length-2], b = stack[0];
+        if (c.position === t.position) { // Case A: c lies on the same chain as t
+            if (isReflex(s, t, c)) { // t is reflex
+                stack.push(c);
+                events.push(generateEvent(points, 'Case A1: Same Side + Reflex', c, t, s, b));
+            } else { // t is convex
+                while (true) {
+                    let s = stack[stack.length-2],
+                        t = stack[stack.length-1];
+                    output.push([c, t, s]);
+                    events.push(generateEvent(output, "Case A2: Same Side + Convex", c, t, s, b));
+                    stack.pop();
+                    s = stack[stack.length-2];
+                    t = stack[stack.length-1];
+                    if (stack.length === 1 || isReflex(s, t, c)) {
+                        break;
+                    }
+                }
+                stack.push(c);
+            }
+        } else { // Case B: c lies on the opposite chain of t
+            let top = t;
+            while (stack.length > 1) {
+                let s = stack[stack.length-2],
+                    t = stack[stack.length-1];
+                output.push([c, t, s]);
+                events.push(generateEvent(output, "Case B: Opposite Side", c, t, s, b));
+                stack.pop();
+            }
+            stack.pop();
+            stack.push(top);
+            stack.push(c);
+        }
+    }
+    return [output, events];
+}
+
+let [answer, events] = MonotoneDecomp(points);
+
+console.log(events);
 
 answer.forEach(each => {
     let t = new Trapezoid();
     t.chain = each;
     t.draw(ctx);
+
+    let [triangulations, events] = TriangulatingMonotonePolygon(each);
+    triangulations.forEach(each => {
+        drawPoly(ctx, each, 'blue');
+    });
 });
