@@ -16,63 +16,7 @@ function drawPoly(ctx, points, color='red') {
     // ctx.fill();
 }
 
-// 构造多边形
-let points = [];
-const N = 10;
-
-for(let i = 0; i < N; ++i)
-{
-    let point = {};
-    point.angle = Math.random() * 2 * Math.PI;
-    point.radius = Math.random() * 200 + 100;
-    point.x = center + point.radius * Math.cos(point.angle);
-    point.y = center + point.radius * Math.sin(point.angle);
-    points.push(point);
-}
-points.sort((a, b) => a.angle - b.angle);
-
-// 画多边形
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-ctx.fillStyle = 'red';
-
-// 顶点文字
-for(let i = 0; i < N; ++i)
-{
-    ctx.strokeText(`[${i}]`, points[i].x + 5, points[i].y - 5);
-    points[i] = {'x': points[i].x, 'y': points[i].y, 'i': i};
-}
-
-drawPoly(ctx, points);
-
-// 顶点方块
-ctx.fillStyle = 'blue';
-ctx.fillRect(500-2.5, 500-2.5, 5, 5);
-for(let i = 0; i < N; ++i)
-{
-    ctx.fillRect(points[i].x - 2.5, points[i].y - 2.5, 5, 5);
-}
-
 // 算法代码正式开始,返回1代表左边，是在屏幕坐标系下，但是以人的感觉的左边
-function toLeft(start, end, point)
-{
-    let a = {'x': end.x - start.x, 'y': end.y - start.y};
-    let b = {'x': point.x - end.x, 'y': point.y - end.y};
-    let ans = a.x * b.y - a.y * b.x;
-    if(ans === 0)
-    {
-        return 0;
-    }
-    if(ans < 0)
-    {
-        return 1;
-    }
-    if(ans > 0)
-    {
-        return -1;
-    }
-}
-
 
 function point_equal(a, b) {
     return a.x === b.x && a.y === b.y;
@@ -329,18 +273,19 @@ function TriangulatingMonotonePolygon(points) {
     return [output, events];
 }
 
-let [answer, events] = MonotoneDecomp(points);
-
-console.log(events);
-
-answer.forEach(each => {
-    let t = new Trapezoid();
-    t.chain = each;
-    t.draw(ctx);
-
-    let [triangulations, events] = TriangulatingMonotonePolygon(each);
-    triangulations.forEach(each => {
-        drawPoly(ctx, each, 'blue');
-    });
-    console.log(events);
-});
+// let [answer, events] = MonotoneDecomp(points);
+//
+// console.log(events);
+//
+// answer.forEach(each => {
+//     let t = new Trapezoid();
+//     t.chain = each;
+//     t.draw(ctx);
+//
+//     let [triangulations, events] = TriangulatingMonotonePolygon(each);
+//     console.log(triangulations, events);
+//     triangulations.forEach(each => {
+//         drawPoly(ctx, each, 'blue');
+//     });
+//     // console.log(events);
+// });
