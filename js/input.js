@@ -2,6 +2,13 @@ let Input = function() {
     let that = this;
     let enableInput = false;
     let svg = null;
+    let inputg = null;
+    let monoPlay = null;
+
+
+    that.connectMonoPlay = function(tmonoPlay) {
+        monoPlay = tmonoPlay;
+    };
 
     that.__init = function() {
         // enable input event
@@ -33,6 +40,7 @@ let Input = function() {
                 }
                 that.update_view()
             });
+        inputg = svg.append("g").attr("id", "input-g");
 
         $("#random-btn").click(function () {
             that.randomGenerate();
@@ -54,7 +62,7 @@ let Input = function() {
             target: SelectPoints[0]
         };
         for(let edgeidx=0; edgeidx<PolygonEdges.length-1; edgeidx++) {
-            if(isLineIntersect(edgea, PolygonEdges[edgeidx]) || isLineIntersect(edgeb, PolygonEdges[edgeidx])) {
+            if(isLineIntersect(edgea, PolygonEdges[edgeidx])) {
                 flag = false;
                 if(returnfalse) return;
             }
@@ -97,7 +105,7 @@ let Input = function() {
 
     that.update_view = function() {
         // draw points
-                let points = svg.selectAll("circle").data(SelectPoints, d=>d.id);
+                let points = inputg.selectAll("circle").data(SelectPoints, d=>d.id);
                 points.enter()
                     .append("circle")
                     .each(function (d) {
@@ -120,12 +128,12 @@ let Input = function() {
                             let ele = d3.select(this);
                             ele.attr("cx", d.x = e.x)
                                 .attr("cy", d.y = e.y);
-                            svg.selectAll(".polyedge").attr("d", PolygonEdgeAttrs["d"])
+                            inputg.selectAll(".polyedge").attr("d", PolygonEdgeAttrs["d"])
                         }));
                 points.exit().remove();
 
                 // draw edges
-                let polyedges = svg.selectAll(".polyedge").data(PolygonEdges, d=>d.id);
+                let polyedges = inputg.selectAll(".polyedge").data(PolygonEdges, d=>d.id);
                 polyedges.enter()
                     .append("path")
                     .each(function (d) {
@@ -176,6 +184,7 @@ let Input = function() {
         SelectPoints = [];
         PolygonEdges = [];
         that.update_view();
+        monoPlay.clear();
     };
 
     that.randomGenerate = function(N=10) {
