@@ -83,9 +83,12 @@ function negateP(p) {
     return {'x': - p.x, 'y': -p.y, 'i': p.i};
 }
 
+let tid = 0;
 
 class Trapezoid {
     constructor(vertex=null, prev=null, next=null) {
+        this.id = tid;
+        tid += 1;
         if(vertex === null)
         {
             this.chain = null;
@@ -133,8 +136,10 @@ class Trapezoid {
             t1 = t;
         }
         // t1 在左, t2 在右
+        let ans_id = t1.chain.length > t2.chain.length ? t1.id : t2.id;
         this.helper = t1.tail;
         this.chain = t1.chain.concat(t2.chain.slice(1));
+        this.id = ans_id;
     }
 
     split(p, prev, next)
@@ -170,7 +175,7 @@ function onePass(points) {
             'event_type': name,
             'sweepline': point.y,
             'outputs': output.map(ps => ({'points': ps.map(p => ({'x': p.x, 'y': p.y}))})),
-            'trapezoids': sweepline.map(t => ({'helper': {'x': t.helper.x, 'y': t.helper.y}, 'points': t.chain.map(p => ({'x': p.x, 'y': p.y}))}))
+            'trapezoids': sweepline.map(t => ({'id': t.id, 'helper': {'x': t.helper.x, 'y': t.helper.y}, 'points': t.chain.map(p => ({'x': p.x, 'y': p.y}))}))
         };
     }
 
