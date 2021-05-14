@@ -118,7 +118,7 @@ function onePass(points) {
         return {
             'event_type': name,
             'sweepline': point.y,
-            'outputs': output.map(ps => ({'points': ps.map(p => ({'x': p.x, 'y': p.y}))})),
+            'outputs': output.map(t => ({'id': t.id, 'points': t.chain.map(p => ({'x': p.x, 'y': p.y}))})),
             'trapezoids': sweepline.map(t => ({'id': t.id, 'helper': {'x': t.helper.x, 'y': t.helper.y}, 'points': t.chain.map(p => ({'x': p.x, 'y': p.y}))}))
         };
     }
@@ -149,7 +149,7 @@ function onePass(points) {
             {// 四边形封闭了
                 sweepline.splice(t_index, 1);
                 t.chain.splice(0, 1);
-                output.push(t.chain);
+                output.push(t);
                 events.push(generateEvent(p, 'output'));
             }
             else if(point_equal(p, t.head))
@@ -189,8 +189,8 @@ function MonotoneDecomp(points) {
     let [output, events] = onePass(points);
     let answer = [];
     output.forEach(t1 => {
-        onePass(t1.map(negateP))[0].forEach(t2 => {
-            answer.push(t2.map(negateP));
+        onePass(t1.chain.map(negateP))[0].forEach(t2 => {
+            answer.push(t2.chain.map(negateP));
         });
     });
     return [answer, events];
