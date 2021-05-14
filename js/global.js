@@ -39,6 +39,20 @@ TrapezoidTmpEdgeAttrs = {
         return pathd
     },
     fill: "rgb(127, 127, 127)",
-    opacity: d => (1-d.idx*0.2),
+    opacity: d => Math.max(0.1, 1-d.id*0.2),
+    "stroke-width": 0,
+};
+TrapezoidEdgeAttrs = {
+    class: "trapezoid-edge",
+    stroke: "red",
+    d: d => {
+        let pathd = `M ${d.points[0].x} ${d.points[0].y}`;
+        for(let i=1; i<d.points.length; i++) {
+            pathd+=`L ${d.points[i].x} ${d.points[i].y}`
+        }
+        return pathd
+    },
+    fill: "rgb(127, 127, 127)",
+    opacity: d => Math.max(0.1, 1-d.id*0.2),
     "stroke-width": 0,
 };

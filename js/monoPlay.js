@@ -40,9 +40,6 @@ let MonoPlay = function () {
             });
         helper.exit().remove();
         // trapezoids construction
-        for(let i=0; i<MonoStatus[SelectMonoStatus].trapezoids.length; i++) {
-            MonoStatus[SelectMonoStatus].trapezoids[i].idx = i;
-        }
         let trapezoid_tmp = monoG.selectAll("."+TrapezoidTmpEdgeAttrs["class"]).data(MonoStatus[SelectMonoStatus].trapezoids);
         trapezoid_tmp.enter()
             .append("path")
@@ -60,6 +57,24 @@ let MonoPlay = function () {
                 }
             });
         trapezoid_tmp.exit().remove();
+        // trapezoids
+        let trapezoid = monoG.selectAll("."+TrapezoidEdgeAttrs["class"]).data(MonoStatus[SelectMonoStatus].outputs);
+        trapezoid.enter()
+            .append("path")
+            .each(function (d, i) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(TrapezoidEdgeAttrs)) {
+                    ele.attr(key, TrapezoidEdgeAttrs[key]);
+                }
+            });
+        trapezoid
+            .each(function (d, i) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(TrapezoidEdgeAttrs)) {
+                    ele.attr(key, TrapezoidEdgeAttrs[key]);
+                }
+            });
+        trapezoid.exit().remove();
     };
 
     that.step = function() {
