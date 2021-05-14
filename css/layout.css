@@ -13,19 +13,57 @@
     margin: 5px 5px 5px 5px;
 }
 
+.bt-btn {
+    cursor: pointer;
+    margin: 0 8px 0 8px;
+    font-size: 20px;
+}
+
+.bt-btn:active {
+    transform: translateY(2px);
+}
+
+#form-label {
+    font-size: 10px;
+    color: gray;
+    margin: 0 10px 0 0;
+}
+
+#controlrow {
+    margin: 0 10px 0 10px;
+    width: 99%;
+    border-bottom: 1px solid gray;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
 #drawcol {
-    width: 74%;
+    width: 99%;
     height: 100%;
     border: 1px solid black;
     border-radius: 5px;
     margin: 5px 5px 5px 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
 }
 
 #input-block {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    height: 40px;
+    flex: 0 1 auto;
+    border-right: 1px solid black;
+    margin: 10px 10px 10px 10px ;
+}
+
+#randomlevel {
+    width: 200px;
 }
 
 #input-block-enable {

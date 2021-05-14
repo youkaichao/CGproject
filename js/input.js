@@ -1,9 +1,10 @@
 let Input = function() {
     let that = this;
-    let enableInput = false;
+    let enableInput = true;
     let svg = null;
     let inputg = null;
     let monoPlay = null;
+    let randomLevel = 20;
 
 
     that.connectMonoPlay = function(tmonoPlay) {
@@ -43,10 +44,14 @@ let Input = function() {
         inputg = svg.append("g").attr("id", "input-g");
 
         $("#random-btn").click(function () {
-            that.randomGenerate();
+            that.randomGenerate(randomLevel);
         });
         $("#clear-btn").click(function () {
             that.clear();
+        });
+        $("#randomlevel").on("input", function () {
+            randomLevel = parseInt($(this).val());
+            $("#form-label").text("Random Level: "+ randomLevel);
         })
     };
 
@@ -125,6 +130,7 @@ let Input = function() {
                     .call(d3.drag()
                         .on("drag", function (e, d) {
                             // e.stopPropagation();
+                            if(!enableInput) return;
                             let ele = d3.select(this);
                             ele.attr("cx", d.x = e.x)
                                 .attr("cy", d.y = e.y);
@@ -177,10 +183,19 @@ let Input = function() {
                         removeEdge.target.to = PolygonEdges[PolygonEdges.length-1];
                         that.update_view();
                     });
+                polyedges
+                    .each(function (d) {
+                                  let ele = d3.select(this);
+                                  for(let key of Object.keys(PolygonEdgeAttrs)) {
+                                      ele.attr(key, PolygonEdgeAttrs[key]);
+                                  }
+                                });
                 polyedges.exit().remove();
     };
 
     that.clear = function() {
+        PolygonEdgeAttrs["opacity"] = 1;
+        enableInput = true;
         SelectPoints = [];
         PolygonEdges = [];
         that.update_view();
@@ -204,6 +219,10 @@ let Input = function() {
             that.addPoint(point);
         }
         that.update_view();
+    };
+
+    that.enableInput = function(flag) {
+        enableInput = flag;
     };
 
     that.init = function () {

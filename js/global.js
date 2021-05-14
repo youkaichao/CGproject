@@ -11,6 +11,7 @@ PointAttrs = {
 PolygonEdgeAttrs = {
     class: "polyedge",
     d: d=>`M ${d.source.x} ${d.source.y} L ${d.target.x} ${d.target.y}`,
+    opacity: 1,
     stroke: "black",
     "stroke-width": 2
 };
@@ -30,7 +31,7 @@ MonoHelperAttrs = {
 };
 TrapezoidTmpEdgeAttrs = {
     class: "trapezoid-tmp-edge",
-    stroke: "red",
+    stroke: "black",
     d: d => {
         let pathd = `M ${d.points[1].x} ${d.points[1].y}`;
         for(let i=2; i<d.points.length-1; i++) {
@@ -38,9 +39,20 @@ TrapezoidTmpEdgeAttrs = {
         }
         return pathd
     },
-    fill: "rgb(127, 127, 127)",
-    opacity: d => Math.max(0.1, 1-d.id*0.2),
-    "stroke-width": 0,
+    fill: "none",
+    // opacity: d => Math.max(0.1, 1-d.id*0.2),
+    "stroke-width": 4,
+};
+TrapezoidTmpEdgeAttrsLeft = {
+    class: "trapezoid-tmp-edge-left",
+    stroke: "black",
+    d: d => {
+        return `M ${d.source.x} ${d.source.y}` + `L ${d.target.x} ${d.target.y}`
+    },
+    fill: "none",
+    "stroke-dasharray": "5,5",
+    // opacity: d => Math.max(0.1, 1-d.id*0.2),
+    "stroke-width": 4,
 };
 TrapezoidEdgeAttrs = {
     class: "trapezoid-edge",
