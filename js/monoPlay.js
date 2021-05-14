@@ -20,7 +20,6 @@ let MonoPlay = function () {
     };
 
     that.update_view = function() {
-        console.log("mono status:", MonoStatus[SelectMonoStatus]);
         // sweepline
         let sweepline = monoG.selectAll("#"+MonoSweeplineAttrs["id"]).data([MonoStatus[SelectMonoStatus]]);
         sweepline.enter()

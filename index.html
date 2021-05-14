@@ -14,7 +14,12 @@
                         <label for="randomlevel" class="form-label" id="form-label">Random Level: 20</label>
                         <input type="range" class="form-range" min="5" max="40" value="20" id="randomlevel">
                         <i class="bi bi-arrow-clockwise bt-btn" id="random-btn"></i>
-                        <i class="bi bi-arrow-bar-up bt-btn" id="load-btn"></i>
+                        <div class="upload">
+                            <label for="load-btn">
+                                <i class="bi bi-arrow-bar-up bt-btn"></i>
+                            </label>
+                            <input id="load-btn" type="file" style="display: none"/>
+                        </div>
                         <i class="bi bi-trash bt-btn" id="clear-btn"></i>
                     </div>
                     <div id="monocomp">

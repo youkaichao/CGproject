@@ -52,6 +52,24 @@ let Input = function() {
         $("#randomlevel").on("input", function () {
             randomLevel = parseInt($(this).val());
             $("#form-label").text("Random Level: "+ randomLevel);
+        });
+
+        $("#load-btn").change(function () {
+            let file = this.files && this.files[0];
+            if (!file) {
+                return;
+            }
+            let fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                that.clear();
+                let text = e.target.result;
+                let points = JSON.parse(text);
+                for(let point of points) {
+                    that.addPoint(point);
+                }
+                that.update_view();
+            };
+            fileReader.readAsText(this.files[0]);
         })
     };
 
@@ -150,7 +168,7 @@ let Input = function() {
                     })
                     .on("mouseover", function () {
                         let ele = d3.select(this);
-                        ele.attr("stroke-width", 4);
+                        ele.attr("stroke-width", 6);
                     })
                     .on("mouseout", function () {
                         let ele = d3.select(this);
