@@ -1,6 +1,7 @@
 SelectPoints = [];
 PolygonEdges = [];
 MonoStatus = [];
+DecompIDtoIdx = {};
 SelectMonoStatus = -1;
 PointAttrs = {
     class: "point",
@@ -65,6 +66,6 @@ TrapezoidEdgeAttrs = {
         return pathd
     },
     fill: "rgb(127, 127, 127)",
-    opacity: d => Math.max(0.1, 1-d.id*0.2),
+    opacity: d => Math.max(0.1, 1-DecompIDtoIdx[d.id]*0.2),
     "stroke-width": 0,
 };

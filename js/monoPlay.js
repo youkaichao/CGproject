@@ -122,6 +122,11 @@ let MonoPlay = function () {
                 return
             }
             let [answer, events] = MonotoneDecomp(SelectPoints);
+            DecompIDtoIdx = {};
+            let idx = 0;
+            for(let idx=0; idx<events[events.length-1].outputs.length; idx++) {
+                DecompIDtoIdx[events[events.length-1].outputs[idx].id] = idx;
+            }
             MonoStatus = events;
             if(MonoStatus.length === 0) {
                 console.log("ERROR: monotoneDecomp return empty events!");
