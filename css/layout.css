@@ -13,16 +13,6 @@
     margin: 5px 5px 5px 5px;
 }
 
-.bt-btn {
-    cursor: pointer;
-    margin: 0 8px 0 8px;
-    font-size: 20px;
-}
-
-.bt-btn:active {
-    transform: translateY(2px);
-}
-
 #form-label {
     font-size: 10px;
     color: gray;
@@ -76,7 +66,22 @@
     margin-bottom: 10px;
 }
 
+#monocomp {
+    display: flex;
+    flex-direction: row;
+}
+
 #mainsvg {
     width: 100%;
     height: 100%;
+}
+
+.bt-btn {
+    cursor: pointer;
+    margin: 0 8px 0 8px;
+    font-size: 20px;
+}
+
+.bt-btn:active {
+    transform: translateY(2px);
 }

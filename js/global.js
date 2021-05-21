@@ -69,3 +69,23 @@ TrapezoidEdgeAttrs = {
     opacity: d => Math.max(0.1, 1-DecompIDtoIdx[d.id]*0.2),
     "stroke-width": 0,
 };
+TrapezoidIndex = {
+    class: "trapezoid-index",
+    "font-size": "20px",
+    "text-anchor": "middle",
+    fill: "#CDB5CD",
+    x: d => {
+        let sum_x = 0;
+        for(let i=0; i<d.points.length; i++) {
+            sum_x += d.points[i].x;
+        }
+        return sum_x/d.points.length
+    },
+    y: d => {
+        let sum_y = 0;
+        for(let i=0; i<d.points.length; i++) {
+            sum_y += d.points[i].y;
+        }
+        return sum_y/d.points.length
+    }
+};

@@ -108,6 +108,26 @@ let MonoPlay = function () {
                 }
             });
         trapezoid.exit().remove();
+        // trapezoid text
+        let trapezoidText = monoG.selectAll("."+TrapezoidIndex['class']).data(MonoStatus[SelectMonoStatus].outputs);
+        trapezoidText.enter()
+            .append("text")
+            .text((d, i) => i)
+            .each(function (d, i) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(TrapezoidIndex)) {
+                    ele.attr(key, TrapezoidIndex[key]);
+                }
+            });
+        trapezoidText
+            .text(d => DecompIDtoIdx[d.id])
+            .each(function (d, i) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(TrapezoidIndex)) {
+                    ele.attr(key, TrapezoidIndex[key]);
+                }
+            });
+        trapezoidText.exit().remove();
     };
 
     that.step = function(flag = 0) {
@@ -152,6 +172,7 @@ let MonoPlay = function () {
         monoG.selectAll("."+TrapezoidTmpEdgeAttrs["class"]).data([]).exit().remove();
         monoG.selectAll("."+TrapezoidTmpEdgeAttrsLeft["class"]).data([]).exit().remove();
         monoG.selectAll("."+TrapezoidEdgeAttrs["class"]).data([]).exit().remove();
+        monoG.selectAll("."+TrapezoidIndex['class']).data([]).exit().remove();
     };
 
     that.init = function () {
