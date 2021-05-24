@@ -3,11 +3,19 @@ PolygonEdges = [];
 MonoStatus = [];
 DecompIDtoIdx = {};
 SelectMonoStatus = -1;
+
+TriAnswer = null;
+SelectMonoTriId = -1;
+TriStatus = [];
+SelectTriStatus = -1;
+ColorSchemes = ["#4e79a7", "#f28e2c", "#e15759", "#76b7b2", "#59a14f", "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab"];
+//     LAYOUT     ATTRS          //
 PointAttrs = {
     class: "point",
     r: 5,
     cx: d => d.x,
-    cy: d => d.y
+    cy: d => d.y,
+    fill: "#363636"
 };
 PolygonEdgeAttrs = {
     class: "polyedge",
@@ -57,7 +65,9 @@ TrapezoidTmpEdgeAttrsLeft = {
 };
 TrapezoidEdgeAttrs = {
     class: "trapezoid-edge",
-    stroke: "red",
+    stroke: "black",
+    "stroke-opacity": 0,
+    "stroke-width": 4,
     d: d => {
         let pathd = `M ${d.points[0].x} ${d.points[0].y}`;
         for(let i=1; i<d.points.length; i++) {
@@ -67,7 +77,6 @@ TrapezoidEdgeAttrs = {
     },
     fill: "rgb(127, 127, 127)",
     opacity: d => Math.max(0.1, 1-DecompIDtoIdx[d.id]*0.2),
-    "stroke-width": 0,
 };
 TrapezoidIndex = {
     class: "trapezoid-index",
@@ -88,4 +97,20 @@ TrapezoidIndex = {
         }
         return sum_y/d.points.length
     }
+};
+TriangleAttrs = {
+    class: "triangle-piece",
+    fill: d => ColorSchemes[d.id%ColorSchemes.length],
+    opacity: 0.8,
+    d: d => {
+        let ps = d.points;
+        return `M ${ps[0].x} ${ps[0].y} L ${ps[1].x} ${ps[1].y} L ${ps[2].x} ${ps[2].y} Z`
+    }
+};
+TriangleCurPoint = {
+    class: "tri-cur-point",
+    fill: "red",
+    r: 5,
+    cx: d=>d.x,
+    cy: d=>d.y
 };

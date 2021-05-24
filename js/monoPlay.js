@@ -3,6 +3,7 @@ let MonoPlay = function () {
     let svg = null;
     let monoG = null;
     let inputview = null;
+    let triview = null;
 
     that.__init = function() {
         svg = d3.select("#mainsvg");
@@ -17,6 +18,10 @@ let MonoPlay = function () {
 
     that.connectInputview = function(tinput) {
         inputview = tinput;
+    };
+
+    that.connectTriView = function(tri) {
+        triview = tri;
     };
 
     that.update_view = function() {
@@ -99,6 +104,28 @@ let MonoPlay = function () {
                 for(let key of Object.keys(TrapezoidEdgeAttrs)) {
                     ele.attr(key, TrapezoidEdgeAttrs[key]);
                 }
+            })
+            .on("mouseover", function () {
+                let ele = d3.select(this);
+                ele.attr("stroke-opacity", 1);
+            })
+            .on("mouseout", function () {
+                let ele = d3.select(this);
+                ele.attr("stroke-opacity", 0);
+            })
+            .on("click", function (e, d) {
+                monoG.selectAll("."+TrapezoidEdgeAttrs["class"]).attr("opacity", TrapezoidEdgeAttrs["opacity"]);
+                triview.clear();
+                let ele = d3.select(this);
+                ele.attr("opacity", 0);
+                let [answer, events] = TriangulatingMonotonePolygon(d.points);
+                TriAnswer = answer;
+                console.log("triangulation answer:", answer);
+                console.log("triangulation events:", events);
+                TriStatus = events;
+                SelectTriStatus = -1;
+                SelectMonoTriId = DecompIDtoIdx[d.id];
+                $("#tri-label").text("Selected Trapezoid: "+SelectMonoTriId);
             });
         trapezoid
             .each(function (d, i) {
@@ -142,6 +169,7 @@ let MonoPlay = function () {
                 return
             }
             let [answer, events] = MonotoneDecomp(SelectPoints);
+            console.log("mono decomp result:", answer, events);
             DecompIDtoIdx = {};
             let idx = 0;
             for(let idx=0; idx<events[events.length-1].outputs.length; idx++) {
@@ -165,6 +193,7 @@ let MonoPlay = function () {
     };
 
     that.clear = function() {
+        triview.clear();
         MonoStatus = [];
         SelectMonoStatus = -1;
         monoG.selectAll("#"+MonoSweeplineAttrs["id"]).data([]).exit().remove();

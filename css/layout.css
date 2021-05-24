@@ -13,7 +13,7 @@
     margin: 5px 5px 5px 5px;
 }
 
-#form-label {
+.form-label {
     font-size: 10px;
     color: gray;
     margin: 0 10px 0 0;
@@ -69,6 +69,9 @@
 #monocomp {
     display: flex;
     flex-direction: row;
+    border-right: 1px solid black;
+    height: 40px;
+    align-items: center;
 }
 
 #mainsvg {
@@ -84,4 +87,16 @@
 
 .bt-btn:active {
     transform: translateY(2px);
+}
+
+#triangulation {
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 0 10px;
+    height: 40px;
+    align-items: center;
+}
+
+#tri-label {
+    width: 150px;
 }
