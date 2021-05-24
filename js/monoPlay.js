@@ -114,6 +114,7 @@ let MonoPlay = function () {
                 ele.attr("stroke-opacity", 0);
             })
             .on("click", function (e, d) {
+                if(SelectMonoStatus<MonoStatus.length-1) return;
                 monoG.selectAll("."+TrapezoidEdgeAttrs["class"]).attr("opacity", TrapezoidEdgeAttrs["opacity"]);
                 triview.clear();
                 let ele = d3.select(this);
@@ -139,7 +140,7 @@ let MonoPlay = function () {
         let trapezoidText = monoG.selectAll("."+TrapezoidIndex['class']).data(MonoStatus[SelectMonoStatus].outputs);
         trapezoidText.enter()
             .append("text")
-            .text((d, i) => i)
+            .text(d => DecompIDtoIdx[d.id])
             .each(function (d, i) {
                 let ele = d3.select(this);
                 for(let key of Object.keys(TrapezoidIndex)) {
@@ -162,24 +163,36 @@ let MonoPlay = function () {
         inputview.enableInput(false);
         PolygonEdgeAttrs["opacity"] = 0.2;
         inputview.update_view();
-
         if(MonoStatus.length === 0) {
             if(SelectPoints.length === 0) {
                 console.log("ERROR: can't decomposite monotone, points.length = 0");
                 return
             }
             let [answer, events] = MonotoneDecomp(SelectPoints);
+            PolyAnswer = answer;
             console.log("mono decomp result:", answer, events);
-            DecompIDtoIdx = {};
-            let idx = 0;
-            for(let idx=0; idx<events[events.length-1].outputs.length; idx++) {
-                DecompIDtoIdx[events[events.length-1].outputs[idx].id] = idx;
+            let finaloutputs = [];
+            for(let i=0; i<PolyAnswer.length; i++) {
+                finaloutputs.push({
+                    id:i,
+                    points:PolyAnswer[i]
+                })
             }
+            events.push({
+                event_type:"",
+                outputs: finaloutputs,
+                sweepline: 5000,
+                trapezoids:[]
+            });
             MonoStatus = events;
             if(MonoStatus.length === 0) {
                 console.log("ERROR: monotoneDecomp return empty events!");
                 return;
             }
+        }
+        DecompIDtoIdx = {};
+        for(let idx=0; idx<MonoStatus[MonoStatus.length-2].outputs.length; idx++) {
+            DecompIDtoIdx[MonoStatus[MonoStatus.length-2].outputs[idx].id] = idx;
         }
         if (flag===0)
             SelectMonoStatus = (SelectMonoStatus+1)%MonoStatus.length;
@@ -189,6 +202,12 @@ let MonoPlay = function () {
             SelectMonoStatus = 0;
         else if(flag===3)
             SelectMonoStatus = MonoStatus.length-1;
+        if(SelectMonoStatus===MonoStatus.length-1) {
+            DecompIDtoIdx = {};
+            for(let idx=0; idx<MonoStatus[MonoStatus.length-1].outputs.length; idx++) {
+                DecompIDtoIdx[MonoStatus[MonoStatus.length-1].outputs[idx].id] = idx;
+            }
+        }
         that.update_view()
     };
 

@@ -22,13 +22,6 @@ let TriPlay = function () {
     that.update_view = function() {
         // update data
         let triangleData = TriStatus[SelectTriStatus];
-        if(true) {
-            triangleData.outputs = TriAnswer.map(d => {
-                return {
-                    points: d
-                }
-            });
-        }
         // let polygonEdges = {};
         // let showingEdges = {};
         // for(let i=0; i<SelectPoints.length; i++) {

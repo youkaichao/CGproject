@@ -1,6 +1,7 @@
 SelectPoints = [];
 PolygonEdges = [];
 MonoStatus = [];
+PolyAnswer = [];
 DecompIDtoIdx = {};
 SelectMonoStatus = -1;
 
