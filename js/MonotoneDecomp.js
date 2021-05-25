@@ -118,8 +118,8 @@ function onePass(points) {
         return {
             'event_type': name,
             'sweepline': point.y,
-            'outputs': output.map(t => ({'id': t.id, 'points': t.chain.map(p => ({'x': p.x, 'y': p.y}))})),
-            'trapezoids': sweepline.map(t => ({'id': t.id, 'helper': {'x': t.helper.x, 'y': t.helper.y}, 'points': t.chain.map(p => ({'x': p.x, 'y': p.y}))}))
+            'outputs': output.map(t => ({'id': t.id, 'points': t.chain.map(p => ({'x': p.x, 'y': p.y, 'id': p.id}))})),
+            'trapezoids': sweepline.map(t => ({'id': t.id, 'helper': {'x': t.helper.x, 'y': t.helper.y}, 'points': t.chain.map(p => ({'x': p.x, 'y': p.y, 'id': p.id}))}))
         };
     }
 
@@ -205,6 +205,15 @@ function isReflex(s, t, c) {
     }
 }
 
+function CCW(a, b, c) {
+    if (toLeft(a, b, c)) {
+        return [a, b, c];
+    } else {
+        return [c, b, a];
+    }
+
+}
+
 function TriangulatingMonotonePolygon(points) {
     points = Object.assign([], points);
     let output = []; // 存放切出来的三角形（三角形的形式是 point array）
@@ -213,9 +222,9 @@ function TriangulatingMonotonePolygon(points) {
     function generateEvent(point, name, c, stack) {
         return {
             'event_type': name,
-            'outputs': output.map(ps => ({'points': ps.map(p => ({'x': p.x, 'y': p.y, 'i': p.i}))})),
-            'c': {'x': c.x, 'y': c.y, 'i': c.i}, // the current vertex
-            'stack': stack.map(p => ({'x': p.x, 'y': p.y, 'i': p.i})),
+            'outputs': output.map(ps => ({'points': ps.map(p => ({'x': p.x, 'y': p.y, 'id': p.id}))})),
+            'c': {'x': c.x, 'y': c.y, 'id': c.id}, // the current vertex
+            'stack': stack.map(p => ({'x': p.x, 'y': p.y, 'id': p.id})),
         };
     }
 
@@ -248,7 +257,7 @@ function TriangulatingMonotonePolygon(points) {
                 while (true) {
                     let s = stack[stack.length-2],
                         t = stack[stack.length-1];
-                    output.push([c, t, s]);
+                    output.push(CCW(s, t, c));
                     stack.pop();
                     events.push(generateEvent(output, "Case A2: Same Side + Convex (chop triangle)", c, stack));
                     s = stack[stack.length-2];
@@ -265,7 +274,7 @@ function TriangulatingMonotonePolygon(points) {
             while (stack.length > 1) {
                 let s = stack[stack.length-2],
                     t = stack[stack.length-1];
-                output.push([c, t, s]);
+                output.push(CCW(s, t, c));
                 stack.pop();
                 events.push(generateEvent(output, "Case B: Opposite Side (chop triangle)", c, stack));
             }
