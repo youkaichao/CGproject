@@ -206,7 +206,7 @@ function isReflex(s, t, c) {
 }
 
 function CCW(a, b, c) {
-    if (toLeft(a, b, c)) {
+    if (toLeft(a, b, c)===1) {
         return [a, b, c];
     } else {
         return [c, b, a];
