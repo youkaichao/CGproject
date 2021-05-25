@@ -4,19 +4,20 @@ MonoStatus = [];
 PolyAnswer = [];
 DecompIDtoIdx = {};
 SelectMonoStatus = -1;
+TrapezoidColorThemes = ["#ffcbf2","#f3c4fb","#ecbcfd","#e5b3fe","#e2afff","#deaaff","#d8bbff"];
 
 TriAnswer = null;
 SelectMonoTriId = -1;
 TriStatus = [];
 SelectTriStatus = -1;
-ColorSchemes = ["#4e79a7", "#f28e2c", "#e15759", "#76b7b2", "#59a14f", "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab"];
+ColorSchemes = ["#edf2fb","#e2eafc","#d7e3fc","#ccdbfd","#c1d3fe","#b6ccfe","#abc4ff"];
 //     LAYOUT     ATTRS          //
 PointAttrs = {
     class: "point",
-    r: 5,
+    r: 3,
     cx: d => d.x,
     cy: d => d.y,
-    fill: "#363636"
+    fill: "rgb(127,127,127)"
 };
 PolygonEdgeAttrs = {
     class: "polyedge",
@@ -66,7 +67,7 @@ TrapezoidTmpEdgeAttrsLeft = {
 };
 TrapezoidEdgeAttrs = {
     class: "trapezoid-edge",
-    stroke: "black",
+    stroke: "rgb(127,127,127)",
     "stroke-opacity": 0,
     "stroke-width": 4,
     d: d => {
@@ -76,8 +77,8 @@ TrapezoidEdgeAttrs = {
         }
         return pathd
     },
-    fill: "rgb(127, 127, 127)",
-    opacity: d => Math.max(0.1, 1-DecompIDtoIdx[d.id]*0.2),
+    fill: d => TrapezoidColorThemes[DecompIDtoIdx[d.id]%TrapezoidColorThemes.length],
+    opacity: 1,
 };
 TrapezoidIndex = {
     class: "trapezoid-index",
