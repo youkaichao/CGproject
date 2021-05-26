@@ -86,8 +86,8 @@ let TriPlay = function () {
     that.step = function(flag = 0) {
         //0: next, 1: last, 2: start, 3: end
 
-        if(MonoStatus.length === 0) {
-            console.log("No trapezoid selected to show triangulation");
+        if(TriStatus.length === 0) {
+            alert("No simple polygon selected to show triangulation");
             return
         }
         if (flag===0)

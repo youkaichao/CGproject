@@ -24,7 +24,7 @@ function point_equal(a, b) {
 
 
 function negateP(p) {
-    return {'x': - p.x, 'y': -p.y, 'i': p.i};
+    return {'x': - p.x, 'y': -p.y, 'id': p.id};
 }
 
 let tid = 0;
@@ -186,6 +186,10 @@ function onePass(points) {
 }
 
 function MonotoneDecomp(points) {
+    // init points id
+    for(let id=0; id<points.length; id++) {
+        points[id].id = id;
+    }
     let [output, events] = onePass(points);
     let answer = [];
     output.forEach(t1 => {
