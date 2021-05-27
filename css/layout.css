@@ -90,6 +90,10 @@
 }
 
 #triangulation {
+    border-right: 1px solid black;
+}
+
+#triangulation, #fisk {
     display: flex;
     flex-direction: row;
     margin: 0 0 0 10px;

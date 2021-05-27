@@ -11,8 +11,8 @@
             <div id="drawcol">
                 <div id="controlrow">
                     <div id="input-block">
-                        <label for="randomlevel" class="form-label" id="form-label">Random Level: 20</label>
-                        <input type="range" class="form-range" min="5" max="40" value="20" id="randomlevel">
+                        <label for="randomlevel" class="form-label" id="form-label">Random Level: 30</label>
+                        <input type="range" class="form-range" min="5" max="50" value="30" id="randomlevel">
                         <i class="bi bi-arrow-clockwise bt-btn" id="random-btn"></i>
                         <div class="upload">
                             <label for="load-btn">
@@ -35,6 +35,12 @@
                         <i class="bi bi-chevron-right bt-btn" id="tri-next-comp-btn"></i>
                         <i class="bi bi-chevron-double-right bt-btn" id="tri-end-comp-btn"></i>
                     </div>
+                    <div id="fisk">
+                        <i class="bi bi-chevron-double-left bt-btn" id="fisk-start-comp-btn"></i>
+                        <i class="bi bi-chevron-left bt-btn" id="fisk-last-comp-btn"></i>
+                        <i class="bi bi-chevron-right bt-btn" id="fisk-next-comp-btn"></i>
+                        <i class="bi bi-chevron-double-right bt-btn" id="fisk-end-comp-btn"></i>
+                    </div>
                 </div>
                 <svg id="mainsvg"></svg>
             </div>
@@ -46,8 +52,10 @@
         <script src="js/utils.js"></script>
         <script src="js/input.js"></script>
         <script src="js/MonotoneDecomp.js"></script>
+        <script src="js/dcel.js"></script>
         <script src="js/monoPlay.js"></script>
         <script src="js/triangle.js"></script>
+        <script src="js/fisk.js"></script>
         <script src="js/main.js"></script>
     </body>
 </html>

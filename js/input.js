@@ -4,7 +4,7 @@ let Input = function() {
     let svg = null;
     let inputg = null;
     let monoPlay = null;
-    let randomLevel = 20;
+    let randomLevel = 30;
 
 
     that.connectMonoPlay = function(tmonoPlay) {

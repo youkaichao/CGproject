@@ -116,3 +116,11 @@ TriangleCurPoint = {
     cx: d=>d.x,
     cy: d=>d.y
 };
+FiskColors=["red", "yellow", "green"];
+FiskPointAttrs = {
+    class: "fiskPoint",
+    r: 3,
+    cx: d => d.x,
+    cy: d => d.y,
+    fill: d => FiskColors[d.c]
+};

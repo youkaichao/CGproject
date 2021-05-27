@@ -115,8 +115,8 @@ let MonoPlay = function () {
             })
             .on("click", function (e, d) {
                 if(SelectMonoStatus<MonoStatus.length-1) return;
-                monoG.selectAll("."+TrapezoidEdgeAttrs["class"]).attr("opacity", TrapezoidEdgeAttrs["opacity"]);
-                triview.clear();
+                // monoG.selectAll("."+TrapezoidEdgeAttrs["class"]).attr("opacity", TrapezoidEdgeAttrs["opacity"]);
+                // triview.clear();
                 let ele = d3.select(this);
                 ele.attr("opacity", 0);
                 let [answer, events] = TriangulatingMonotonePolygon(d.points);
@@ -194,6 +194,7 @@ let MonoPlay = function () {
         for(let idx=0; idx<MonoStatus[MonoStatus.length-2].outputs.length; idx++) {
             DecompIDtoIdx[MonoStatus[MonoStatus.length-2].outputs[idx].id] = idx;
         }
+        triview.clear();
         if (flag===0)
             SelectMonoStatus = (SelectMonoStatus+1)%MonoStatus.length;
         else if(flag===1)

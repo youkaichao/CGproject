@@ -1,145 +1,141 @@
-class Vertex {
-    constructor(id, point) {
-        this.id = id;
-        this.point = point;
-        this.outEdges = []; // outgoing HalfEdges
-    }
-}
+let FiskPlay = function () {
+    let that = this;
+    let svg = null;
+    let fiskG = null;
+    let triplay = null;
+    let answer = [];
+    let events = [];
+    let fiskStatus = -1;
 
+    that.__init = function() {
+        svg = d3.select("#mainsvg");
+        fiskG = svg.append("g").attr("id", "fisk-g");
 
-class HalfEdge {
-    constructor(src, tgt) {
-        this.src = src; // source Vertex
-        this.tgt = tgt; // target Vertex
-        this.twin = null; // twin HalfEdge
-        this.face = null; // incident Face
-    }
-}
+        $("#fisk-next-comp-btn").click(() => {that.step(0)});
+        $("#fisk-last-comp-btn").click(() => {that.step(1)});
+        $("#fisk-start-comp-btn").click(() => {that.step(2)});
+        $("#fisk-end-comp-btn").click(() => {that.step(3)});
 
-class Face {
-    constructor(id) {
-        this.id = id;
-        this.incidentEdges = []; // incident HalfEdges
-    }
+    };
 
-    // all the verices on this face
-    vertices() {
-        let vs = [];
-        this.incidentEdges.forEach((e, i) => {
-            vs.push(e.src);
-        });
-        return vs;
-    }
+    that.isPlaying = function() {
+        return events.length>0
+    };
 
-    // all the incident faces
-    incidentFaces() {
-        let faces = [];
-        this.incidentEdges.forEach((e, i) => {
-            if (e.twin.face !== null) {
-                faces.push(e.twin.face);
-            }
-        });
-        return faces;
-    }
+    that.connectTriangulationView = function(ttri) {
+        triplay = ttri;
+    };
 
-    debug() {
-        let vs = [];
-        this.vertices().forEach((v, i) => {
-           vs.push(v.id);
-        });
-        console.log("Face:", this.id, vs);
-    }
-}
+    that.update_view = function() {
+        let points = events[fiskStatus];
+        // triangle pieces
+        let fiskpoints = fiskG.selectAll("."+FiskPointAttrs["class"]).data(points);
+        fiskpoints.enter()
+            .append("circle")
+            .each(function (d, i) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(FiskPointAttrs)) {
+                    ele.attr(key, FiskPointAttrs[key]);
+                }
+            });
+        fiskpoints
+            .each(function (d, i) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(FiskPointAttrs)) {
+                    ele.attr(key, FiskPointAttrs[key]);
+                }
+            });
+        fiskpoints.exit().remove();
+    };
 
-class DCEL {
-    constructor() {
-        this.edges = [];
-        this.faces = [];
-        this.vertices = [];
-    }
-
-    createVertex(point) {
-        this.vertices.push(new Vertex(this.vertices.length, point));
-    }
-
-    // create Edge between Vertex va and Vertex vb if this Edge doesn't exist
-    createEdge(va, vb) {
-        let eab = this.getHalfEdge(va, vb);
-        if (eab !== null) {
-            return eab;
+    that.step = function(flag = 0) {
+        //0: next, 1: last, 2: start, 3: end
+        if(SelectMonoStatus!==MonoStatus.length-1) return;
+        if(MonoStatus.length === 0) {
+            alert("No simple polygon selected to show triangulation");
+            return
         }
-        let left = new HalfEdge(va, vb), right = new HalfEdge(vb, va);
-        left.twin = right; right.twin = left;
-        va.outEdges.push(left);
-        vb.outEdges.push(right);
-        this.edges.push(left); this.edges.push(right);
-        return left;
-    }
+        if(events.length === 0) {
+            that.showAllTriangulation();
+            let triangles = triplay.getLastTriangleBuffer().map(d => d.points);
+            [answer, events] = that.fisk(triangles);
+            fiskStatus = -1;
+        }
+        if (flag===0)
+            fiskStatus = (fiskStatus+1)%events.length;
+        else if(flag===1)
+            fiskStatus = (fiskStatus+events.length-1)%events.length;
+        else if(flag===2)
+            fiskStatus = 0;
+        else if(flag===3)
+            fiskStatus = events.length-1;
+        that.update_view()
+    };
 
-    createFace(halfEdges) {
-        let face = new Face(this.faces.length);
-        halfEdges.forEach((e, i) => {
-            face.incidentEdges.push(e);
-            e.face = face;
-        });
-        this.faces.push(face);
-        return face;
-    }
+    that.showAllTriangulation = function() {
+        // mono decomp not finish
+        if(SelectMonoStatus<MonoStatus.length-1) return;
+        triplay.clear();
+        d3.selectAll("."+TrapezoidEdgeAttrs["class"]).attr("opacity", 0);
+        for(let d of MonoStatus[MonoStatus.length-1].outputs) {
+            let [answer, events] = TriangulatingMonotonePolygon(d.points);
+            TriAnswer = answer;
+            TriStatus = events;
+            SelectTriStatus = -1;
+            SelectMonoTriId = DecompIDtoIdx[d.id];
+            triplay.step(3);
+        }
+        d3.selectAll("."+TriangleCurPoint["class"]).data([]).exit().remove();
+    };
 
-    // get HalfEdge from Vertex va to Vertex vb
-    // return null if this Edge doesn't exist
-    getHalfEdge(va, vb) {
-        let edge = null;
-        va.outEdges.forEach((e, i) => {
-            if (e.tgt === vb) {
-                edge = e;
+    that.fisk = function(triangles) {
+        let graphdcel = getGraph(triangles);
+        let answer = [];
+        let events = [];
+        let pointid2color = {};
+        let visited = {};
+        // init a face
+        for(let i=0; i<triangles[0].length; i++) {
+            let point = triangles[0][i];
+            point.c = i;
+            pointid2color[point.id] = i;
+        }
+        events.push(triangles[0]);
+        // BFS
+        let queue = JSON.parse(JSON.stringify(graphdcel[0]));
+        visited[0]=true;
+        while (queue.length > 0) {
+            let faceid = queue.shift();
+            visited[faceid] = true;
+            for(let neighborid of graphdcel[faceid]) {
+                if(!visited[neighborid]) {
+                    visited[neighborid] = true;
+                    queue.push(neighborid);
+                }
             }
-        });
-        return edge;
-    }
-    
-}
+            let uncolored = null;
+            let colorsum = 0;
+            for(let point of triangles[faceid]) {
+                if(pointid2color[point.id]===undefined) uncolored = point;
+                else colorsum += pointid2color[point.id]
+            }
+            uncolored.c = 3-colorsum;
+            pointid2color[uncolored.id] = uncolored.c;
+            let event = events[events.length-1].slice(0, events[events.length-1].length);
+            event.push(uncolored);
+            events.push(event);
+        }
+        answer = events[events.length-1];
+        return [answer, events]
+    };
 
-function getGraph(points, triangles) {
-    // make DCEL
-    let dcel = new DCEL();
+    that.clear = function() {
+        answer = [];
+        events = [];
+        fiskG.selectAll("."+FiskPointAttrs["class"]).data([]).exit().remove();
+    };
 
-    for (let point in points){
-        dcel.createVertex(point);
-    }
-
-    for (let i=0; i<triangles.length; i++) {
-        let [pa, pb, pc] = triangles[i];
-        let va = dcel.vertices[pa.id], vb = dcel.vertices[pb.id], vc = dcel.vertices[pc.id];
-        let eab = dcel.createEdge(va, vb), ebc = dcel.createEdge(vb, vc), eca = dcel.createEdge(vc, va);
-        dcel.createFace([eab, ebc, eca]);
-    }
-
-    // get graph
-    let graph = {};
-    dcel.faces.forEach((face, i) => {
-        graph[face.id] = [];
-        // get the id of all incident faces
-        face.incidentFaces().forEach((f, i) => {
-           graph[face.id].push(f.id);
-        });
-    });
-
-    // only for debug
-    dcel.faces.forEach((face, i) => {
-        face.debug();
-        console.log("Neighbor");
-        face.incidentFaces().forEach((f, i)=>{
-            f.debug();
-        });
-        console.log("---------------");
-    });
-    return graph;
-}
-
-// example of usage
-let points = [{'x': 1, 'y': 2, 'id': 0}, {'id':1}, {'id':2},{'id':3},{'id':4},{'id':5},{'id':6},];
-let triangles = [[points[0], points[1], points[2]], [points[1], points[3], points[2]], [points[1], points[4], points[3]], [points[4], points[6], points[3]], [points[4], points[5], points[6]]];
-
-let graph = getGraph(points, triangles);
-console.log(graph);
+    that.init = function () {
+        that.__init();
+    }.call();
+};

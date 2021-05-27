@@ -3,6 +3,8 @@ let TriPlay = function () {
     let svg = null;
     let triG = null;
     let inputview = null;
+    let fiskview = null;
+    let lastTriangleBuffer = [];
 
     that.__init = function() {
         svg = d3.select("#mainsvg");
@@ -15,8 +17,16 @@ let TriPlay = function () {
 
     };
 
+    that.getLastTriangleBuffer = function() {
+        return lastTriangleBuffer
+    };
+
     that.connectInputview = function(tinput) {
         inputview = tinput;
+    };
+
+    that.connectFiskView = function(fisk) {
+        fiskview = fisk;
     };
 
     that.update_view = function() {
@@ -43,9 +53,10 @@ let TriPlay = function () {
         for(let i=0; i<triangleData.outputs.length; i++) {
             triangleData.outputs[i].id = i;
         }
+        lastTriangleBuffer = lastTriangleBuffer.concat(triangleData.outputs);
 
         // triangle pieces
-        let tripieces = triG.selectAll("."+TriangleAttrs["class"]).data(triangleData.outputs);
+        let tripieces = triG.selectAll("."+TriangleAttrs["class"]).data(lastTriangleBuffer);
         tripieces.enter()
             .append("path")
             .each(function (d, i) {
@@ -85,7 +96,7 @@ let TriPlay = function () {
 
     that.step = function(flag = 0) {
         //0: next, 1: last, 2: start, 3: end
-
+        if(fiskview.isPlaying()) return;
         if(TriStatus.length === 0) {
             alert("No simple polygon selected to show triangulation");
             return
@@ -102,8 +113,10 @@ let TriPlay = function () {
     };
 
     that.clear = function() {
+        fiskview.clear();
         TriStatus = [];
         SelectTriStatus = -1;
+        lastTriangleBuffer = [];
         $("#tri-label").text("Selected Trapezoid: None");
         triG.selectAll("."+TriangleAttrs["class"]).data([]).exit().remove();
         triG.selectAll("."+TriangleCurPoint["class"]).data([]).exit().remove();
