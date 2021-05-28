@@ -227,8 +227,8 @@ let Input = function() {
             let point = {};
             point.angle = Math.random() * 2 * Math.PI;
             point.radius = Math.random() * 200 + 100;
-            point.x = center + point.radius * Math.cos(point.angle);
-            point.y = center + point.radius * Math.sin(point.angle);
+            point.x = d3.select("#mainsvg").node().clientWidth/2 + point.radius * Math.cos(point.angle);
+            point.y = d3.select("#mainsvg").node().clientHeight/2 + point.radius * Math.sin(point.angle);
             point.id = i;
             points.push(point);
         }
