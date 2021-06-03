@@ -53,7 +53,9 @@ let TriPlay = function () {
         for(let i=0; i<triangleData.outputs.length; i++) {
             triangleData.outputs[i].id = i;
         }
-        lastTriangleBuffer = lastTriangleBuffer.concat(triangleData.outputs);
+        if(TriangulationUseBuffer)
+            lastTriangleBuffer = lastTriangleBuffer.concat(triangleData.outputs);
+        else lastTriangleBuffer = triangleData.outputs;
 
         // triangle pieces
         let tripieces = triG.selectAll("."+TriangleAttrs["class"]).data(lastTriangleBuffer);

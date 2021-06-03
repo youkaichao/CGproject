@@ -3,6 +3,8 @@ let Input = function() {
     let enableInput = true;
     let svg = null;
     let inputg = null;
+    let nodeg = null;
+    let edgeg = null;
     let monoPlay = null;
     let randomLevel = 30;
 
@@ -42,6 +44,8 @@ let Input = function() {
                 that.update_view()
             });
         inputg = svg.append("g").attr("id", "input-g");
+        edgeg = inputg.append("g").attr("id", "edge-g");
+        nodeg = inputg.append("g").attr("id", "node-g");
 
         $("#random-btn").click(function () {
             that.randomGenerate(randomLevel);
@@ -127,88 +131,88 @@ let Input = function() {
     };
 
     that.update_view = function() {
-        // draw points
-                let points = inputg.selectAll("circle").data(SelectPoints, d=>d.id);
-                points.enter()
-                    .append("circle")
-                    .each(function (d) {
-                        let ele = d3.select(this);
-                        for(let key of Object.keys(PointAttrs)) {
-                            ele.attr(key, PointAttrs[key]);
-                        }
-                    })
-                    .on("mouseover", function () {
-                        let ele = d3.select(this);
-                        ele.attr("r", 8);
-                    })
-                    .on("mouseout", function () {
-                        let ele = d3.select(this);
-                        ele.attr("r", PointAttrs["r"]);
-                    })
-                    .call(d3.drag()
-                        .on("drag", function (e, d) {
-                            // e.stopPropagation();
-                            if(!enableInput) return;
-                            let ele = d3.select(this);
-                            ele.attr("cx", d.x = e.x)
-                                .attr("cy", d.y = e.y);
-                            inputg.selectAll(".polyedge").attr("d", PolygonEdgeAttrs["d"])
-                        }));
-                points.exit().remove();
+        // draw edges
+        let polyedges = edgeg.selectAll(".polyedge").data(PolygonEdges, d=>d.id);
+        polyedges.enter()
+            .append("path")
+            .each(function (d) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(PolygonEdgeAttrs)) {
+                    ele.attr(key, PolygonEdgeAttrs[key]);
+                }
+            })
+            .on("mouseover", function () {
+                let ele = d3.select(this);
+                ele.attr("stroke-width", 6);
+            })
+            .on("mouseout", function () {
+                let ele = d3.select(this);
+                ele.attr("stroke-width", PolygonEdgeAttrs["stroke-width"]);
+            })
+            .on("click", function (e,d) {
+                console.log("click edge");
+                e.stopPropagation();
+                let newData= {
+                    id: SelectPoints.length,
+                    x: Math.round(e.offsetX),
+                    y: Math.round(e.offsetY)
+                };
+                let idx = SelectPoints.indexOf(d.source)+1;
+                SelectPoints.splice(idx, 0, newData);
+                let removeEdge = PolygonEdges.splice(PolygonEdges.indexOf(d), 1)[0];
+                PolygonEdges.push({
+                    id:removeEdge.source.id+","+newData.id,
+                    source: removeEdge.source,
+                    target: newData
+                });
+                PolygonEdges.push({
+                    id: newData.id+","+removeEdge.target.id,
+                    source: newData,
+                    target: removeEdge.target
+                });
+                removeEdge.source.from = PolygonEdges[PolygonEdges.length-2];
+                newData.to = PolygonEdges[PolygonEdges.length-2];
+                newData.from = PolygonEdges[PolygonEdges.length-1];
+                removeEdge.target.to = PolygonEdges[PolygonEdges.length-1];
+                that.update_view();
+            });
+        polyedges
+            .each(function (d) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(PolygonEdgeAttrs)) {
+                    ele.attr(key, PolygonEdgeAttrs[key]);
+                }
+            });
+        polyedges.exit().remove();
 
-                // draw edges
-                let polyedges = inputg.selectAll(".polyedge").data(PolygonEdges, d=>d.id);
-                polyedges.enter()
-                    .append("path")
-                    .each(function (d) {
-                      let ele = d3.select(this);
-                      for(let key of Object.keys(PolygonEdgeAttrs)) {
-                          ele.attr(key, PolygonEdgeAttrs[key]);
-                      }
-                    })
-                    .on("mouseover", function () {
-                        let ele = d3.select(this);
-                        ele.attr("stroke-width", 6);
-                    })
-                    .on("mouseout", function () {
-                        let ele = d3.select(this);
-                        ele.attr("stroke-width", PolygonEdgeAttrs["stroke-width"]);
-                    })
-                    .on("click", function (e,d) {
-                        console.log("click edge");
-                        e.stopPropagation();
-                        let newData= {
-                            id: SelectPoints.length,
-                            x: Math.round(e.offsetX),
-                            y: Math.round(e.offsetY)
-                        };
-                        let idx = SelectPoints.indexOf(d.source)+1;
-                        SelectPoints.splice(idx, 0, newData);
-                        let removeEdge = PolygonEdges.splice(PolygonEdges.indexOf(d), 1)[0];
-                        PolygonEdges.push({
-                            id:removeEdge.source.id+","+newData.id,
-                            source: removeEdge.source,
-                            target: newData
-                        });
-                        PolygonEdges.push({
-                            id: newData.id+","+removeEdge.target.id,
-                            source: newData,
-                            target: removeEdge.target
-                        });
-                        removeEdge.source.from = PolygonEdges[PolygonEdges.length-2];
-                        newData.to = PolygonEdges[PolygonEdges.length-2];
-                        newData.from = PolygonEdges[PolygonEdges.length-1];
-                        removeEdge.target.to = PolygonEdges[PolygonEdges.length-1];
-                        that.update_view();
-                    });
-                polyedges
-                    .each(function (d) {
-                                  let ele = d3.select(this);
-                                  for(let key of Object.keys(PolygonEdgeAttrs)) {
-                                      ele.attr(key, PolygonEdgeAttrs[key]);
-                                  }
-                                });
-                polyedges.exit().remove();
+        // draw points
+        let points = nodeg.selectAll("circle").data(SelectPoints, d=>d.id);
+        points.enter()
+            .append("circle")
+            .each(function (d) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(PointAttrs)) {
+                    ele.attr(key, PointAttrs[key]);
+                }
+            })
+            .on("mouseover", function () {
+                let ele = d3.select(this);
+                ele.attr("r", 8);
+            })
+            .on("mouseout", function () {
+                let ele = d3.select(this);
+                ele.attr("r", PointAttrs["r"]);
+            })
+            .call(d3.drag()
+                .on("drag", function (e, d) {
+                    // e.stopPropagation();
+                    if(!enableInput) return;
+                    let ele = d3.select(this);
+                    ele.attr("cx", d.x = e.x)
+                        .attr("cy", d.y = e.y);
+                    edgeg.selectAll(".polyedge").attr("d", PolygonEdgeAttrs["d"])
+                }));
+        points.exit().remove();
     };
 
     that.clear = function() {

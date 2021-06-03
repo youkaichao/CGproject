@@ -5,6 +5,7 @@ PolyAnswer = [];
 DecompIDtoIdx = {};
 SelectMonoStatus = -1;
 TrapezoidColorThemes = ["#ffcbf2","#f3c4fb","#ecbcfd","#e5b3fe","#e2afff","#deaaff","#d8bbff"];
+TriangulationUseBuffer = false;
 
 TriAnswer = null;
 SelectMonoTriId = -1;
@@ -52,7 +53,7 @@ TrapezoidTmpEdgeAttrs = {
     },
     fill: "none",
     // opacity: d => Math.max(0.1, 1-d.id*0.2),
-    "stroke-width": 4,
+    "stroke-width": 2,
 };
 TrapezoidTmpEdgeAttrsLeft = {
     class: "trapezoid-tmp-edge-left",
@@ -63,13 +64,12 @@ TrapezoidTmpEdgeAttrsLeft = {
     fill: "none",
     "stroke-dasharray": "5,5",
     // opacity: d => Math.max(0.1, 1-d.id*0.2),
-    "stroke-width": 4,
+    "stroke-width": 2,
 };
 TrapezoidEdgeAttrs = {
     class: "trapezoid-edge",
     stroke: "rgb(127,127,127)",
     "stroke-opacity": 0,
-    "stroke-width": 4,
     d: d => {
         let pathd = `M ${d.points[0].x} ${d.points[0].y}`;
         for(let i=1; i<d.points.length; i++) {
@@ -84,7 +84,7 @@ TrapezoidIndex = {
     class: "trapezoid-index",
     "font-size": "20px",
     "text-anchor": "middle",
-    fill: "#CDB5CD",
+    fill: "#FFE4B5",
     x: d => {
         let sum_x = 0;
         for(let i=0; i<d.points.length; i++) {

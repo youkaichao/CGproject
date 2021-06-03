@@ -61,6 +61,8 @@ let FiskPlay = function () {
             [answer, events] = that.fisk(triangles);
             fiskStatus = -1;
         }
+        // clear text
+        svg.selectAll("."+TrapezoidIndex['class']).data([]).exit().remove();
         if (flag===0)
             fiskStatus = (fiskStatus+1)%events.length;
         else if(flag===1)
@@ -76,6 +78,7 @@ let FiskPlay = function () {
         // mono decomp not finish
         if(SelectMonoStatus<MonoStatus.length-1) return;
         triplay.clear();
+        TriangulationUseBuffer = true;
         d3.selectAll("."+TrapezoidEdgeAttrs["class"]).attr("opacity", 0);
         for(let d of MonoStatus[MonoStatus.length-1].outputs) {
             let [answer, events] = TriangulatingMonotonePolygon(d.points);
@@ -85,6 +88,7 @@ let FiskPlay = function () {
             SelectMonoTriId = DecompIDtoIdx[d.id];
             triplay.step(3);
         }
+        TriangulationUseBuffer = false;
         d3.selectAll("."+TriangleCurPoint["class"]).data([]).exit().remove();
     };
 

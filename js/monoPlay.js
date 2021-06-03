@@ -2,12 +2,22 @@ let MonoPlay = function () {
     let that = this;
     let svg = null;
     let monoG = null;
+    let sweeplineg = null;
+    let helperg = null;
+    let trapezoidg = null;
+    let textg = null;
+
     let inputview = null;
     let triview = null;
 
     that.__init = function() {
         svg = d3.select("#mainsvg");
         monoG = svg.append("g").attr("id", "mono-g");
+
+        trapezoidg = monoG.append("g").attr("id", "trapezoid-g");
+        helperg = monoG.append("g").attr("id", "helper-g");
+        textg = monoG.append("g").attr("id", "text-g");
+        sweeplineg = monoG.append("g").attr("id", "sweepline-g");
 
         $("#next-comp-btn").click(() => {that.step(0)});
         $("#last-comp-btn").click(() => {that.step(1)});
@@ -26,7 +36,7 @@ let MonoPlay = function () {
 
     that.update_view = function() {
         // sweepline
-        let sweepline = monoG.selectAll("#"+MonoSweeplineAttrs["id"]).data([MonoStatus[SelectMonoStatus]]);
+        let sweepline = sweeplineg.selectAll("#"+MonoSweeplineAttrs["id"]).data([MonoStatus[SelectMonoStatus]]);
         sweepline.enter()
             .append("path")
             .each(function (d) {
@@ -38,7 +48,7 @@ let MonoPlay = function () {
         sweepline.attr("d", MonoSweeplineAttrs["d"]);
         sweepline.exit().remove();
         // helper
-        let helper = monoG.selectAll(".helper").data(MonoStatus[SelectMonoStatus].trapezoids);
+        let helper = helperg.selectAll(".helper").data(MonoStatus[SelectMonoStatus].trapezoids);
         helper.enter()
             .append("circle")
             .each(function (d) {
@@ -55,7 +65,7 @@ let MonoPlay = function () {
             });
         helper.exit().remove();
         // trapezoids construction
-        let trapezoid_tmp = monoG.selectAll("."+TrapezoidTmpEdgeAttrs["class"]).data(MonoStatus[SelectMonoStatus].trapezoids);
+        let trapezoid_tmp = trapezoidg.selectAll("."+TrapezoidTmpEdgeAttrs["class"]).data(MonoStatus[SelectMonoStatus].trapezoids);
         trapezoid_tmp.enter()
             .append("path")
             .each(function (d, i) {
@@ -78,7 +88,7 @@ let MonoPlay = function () {
                 {source: cur.points[cur.points.length-2], target: cur.points[cur.points.length-1]}
             ])
         }, []);
-        let trapezoid_tmp_left = monoG.selectAll("."+TrapezoidTmpEdgeAttrsLeft["class"]).data(leftEdges);
+        let trapezoid_tmp_left = trapezoidg.selectAll("."+TrapezoidTmpEdgeAttrsLeft["class"]).data(leftEdges);
         trapezoid_tmp_left.enter()
             .append("path")
             .each(function (d, i) {
@@ -96,7 +106,7 @@ let MonoPlay = function () {
             });
         trapezoid_tmp_left.exit().remove();
         // trapezoids
-        let trapezoid = monoG.selectAll("."+TrapezoidEdgeAttrs["class"]).data(MonoStatus[SelectMonoStatus].outputs);
+        let trapezoid = trapezoidg.selectAll("."+TrapezoidEdgeAttrs["class"]).data(MonoStatus[SelectMonoStatus].outputs);
         trapezoid.enter()
             .append("path")
             .each(function (d, i) {
@@ -105,18 +115,20 @@ let MonoPlay = function () {
                     ele.attr(key, TrapezoidEdgeAttrs[key]);
                 }
             })
-            .on("mouseover", function () {
+            .on("mouseover", function (e, d) {
+                if(d.id === SelectMonoTriId) return;
                 let ele = d3.select(this);
-                ele.attr("stroke-opacity", 1);
+                ele.attr("opacity", 0.6);
             })
-            .on("mouseout", function () {
+            .on("mouseout", function (e, d) {
+                if(d.id === SelectMonoTriId) return;
                 let ele = d3.select(this);
-                ele.attr("stroke-opacity", 0);
+                ele.attr("opacity", TrapezoidEdgeAttrs["opacity"]);
             })
             .on("click", function (e, d) {
                 if(SelectMonoStatus<MonoStatus.length-1) return;
-                // monoG.selectAll("."+TrapezoidEdgeAttrs["class"]).attr("opacity", TrapezoidEdgeAttrs["opacity"]);
-                // triview.clear();
+                monoG.selectAll("."+TrapezoidEdgeAttrs["class"]).attr("opacity", TrapezoidEdgeAttrs["opacity"]);
+                triview.clear();
                 let ele = d3.select(this);
                 ele.attr("opacity", 0);
                 let [answer, events] = TriangulatingMonotonePolygon(d.points);
@@ -137,7 +149,7 @@ let MonoPlay = function () {
             });
         trapezoid.exit().remove();
         // trapezoid text
-        let trapezoidText = monoG.selectAll("."+TrapezoidIndex['class']).data(MonoStatus[SelectMonoStatus].outputs);
+        let trapezoidText = textg.selectAll("."+TrapezoidIndex['class']).data(MonoStatus[SelectMonoStatus].outputs);
         trapezoidText.enter()
             .append("text")
             .text(d => DecompIDtoIdx[d.id])
