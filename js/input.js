@@ -74,7 +74,12 @@ let Input = function() {
                 that.update_view();
             };
             fileReader.readAsText(this.files[0]);
-        })
+        });
+        $("#download-btn").click(function () {
+            console.log("click download btn");
+            let blob = new Blob([JSON.stringify(SelectPoints.map(d => {return {x:d.x,y:d.y}}), null, 4)], {type: "text/plain;charset=utf-8"});
+            saveAs(blob, `input-${SelectPoints.length}.json`);
+        });
     };
 
     that.addPoint = function(newData, returnfalse = false) {
