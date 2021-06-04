@@ -68,6 +68,10 @@ let Input = function() {
                 that.clear();
                 let text = e.target.result;
                 let points = JSON.parse(text);
+                // points transform
+                let width = d3.select("#mainsvg").node().clientWidth;
+                let height = d3.select("#mainsvg").node().clientHeight;
+                that.center_and_scale(points, width, height);
                 for(let point of points) {
                     that.addPoint(point);
                 }
@@ -80,6 +84,24 @@ let Input = function() {
             let blob = new Blob([JSON.stringify(SelectPoints.map(d => {return {x:d.x,y:d.y}}), null, 4)], {type: "text/plain;charset=utf-8"});
             saveAs(blob, `input-${SelectPoints.length}.json`);
         });
+    };
+
+    that.center_and_scale = function(points, width, height) {
+        let minx=Number.MAX_SAFE_INTEGER;
+        let maxx=Number.MIN_SAFE_INTEGER;
+        let miny=Number.MAX_SAFE_INTEGER;
+        let maxy=Number.MIN_SAFE_INTEGER;
+        for(let point of points) {
+            minx = Math.min(minx, point.x);
+            maxx = Math.max(maxx, point.x);
+            miny = Math.min(miny, point.y);
+            maxy = Math.max(maxy, point.y);
+        }
+        let scale = Math.min(width*0.8/(Math.max(1, maxx-minx)), height*0.8/(Math.max(1, maxy-miny)));
+        for(let point of points) {
+            point.x = (point.x-(minx+maxx)/2)*scale+width/2;
+            point.y = (point.y-(miny+maxy)/2)*scale+height/2;
+        }
     };
 
     that.addPoint = function(newData, returnfalse = false) {
