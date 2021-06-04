@@ -21,3 +21,22 @@ function isLineIntersect(linea, lineb) {
         (toLeft(lineb.source, lineb.target, linea.source)*toLeft(lineb.source, lineb.target, linea.target)>=0))
 }
 
+function distance(a, b) {
+    return Math.sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y))
+}
+
+function findNearestDistance(points) {
+    let n = points.length;
+    let mindis = Number.MAX_SAFE_INTEGER;
+    let minpoints = null;
+    for(let i=0; i<n; i++) {
+        for(let j=i+1; j<n; j++) {
+            let dis = distance(points[i], points[j]);
+            if(mindis>dis) {
+                mindis = dis;
+                minpoints = [i, j];
+            }
+        }
+    }
+    console.log("mindis:", mindis, minpoints);
+}
