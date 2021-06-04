@@ -1,6 +1,7 @@
 let MonoPlay = function () {
     let that = this;
     let svg = null;
+    let infog = null;
     let monoG = null;
     let sweeplineg = null;
     let helperg = null;
@@ -13,6 +14,8 @@ let MonoPlay = function () {
     that.__init = function() {
         svg = d3.select("#mainsvg");
         monoG = svg.append("g").attr("id", "mono-g");
+        infog = svg.select("#infog");
+
 
         trapezoidg = monoG.append("g").attr("id", "trapezoid-g");
         helperg = monoG.append("g").attr("id", "helper-g");
@@ -168,6 +171,15 @@ let MonoPlay = function () {
                 }
             });
         trapezoidText.exit().remove();
+
+        infog.select("#event-label")
+            .text("Event: "+ MonoStatus[SelectMonoStatus].event_type)
+            .each(function (d, i) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(EventTextAttrs)) {
+                    ele.attr(key, EventTextAttrs[key]);
+                }
+            });
     };
 
     that.step = function(flag = 0) {
@@ -234,6 +246,9 @@ let MonoPlay = function () {
         monoG.selectAll("."+TrapezoidTmpEdgeAttrsLeft["class"]).data([]).exit().remove();
         monoG.selectAll("."+TrapezoidEdgeAttrs["class"]).data([]).exit().remove();
         monoG.selectAll("."+TrapezoidIndex['class']).data([]).exit().remove();
+        infog.select("#event-label")
+            .text("Event: None")
+            .attr("opacity", 0);
     };
 
     that.init = function () {

@@ -2,12 +2,14 @@ let TriPlay = function () {
     let that = this;
     let svg = null;
     let triG = null;
+    let infog = null;
     let inputview = null;
     let fiskview = null;
     let lastTriangleBuffer = [];
 
     that.__init = function() {
         svg = d3.select("#mainsvg");
+        infog = svg.select("#infog");
         triG = svg.append("g").attr("id", "tri-g");
 
         $("#tri-next-comp-btn").click(() => {that.step(0)});
@@ -32,24 +34,6 @@ let TriPlay = function () {
     that.update_view = function() {
         // update data
         let triangleData = TriStatus[SelectTriStatus];
-        // let polygonEdges = {};
-        // let showingEdges = {};
-        // for(let i=0; i<SelectPoints.length; i++) {
-        //     let u=SelectPoints[i];
-        //     let v=SelectPoints[(i+1===SelectPoints.length)?0:(i+1)];
-        //     polygonEdges[u.x+','+u.y+','+v.x+','+v.y] = true;
-        // }
-        //
-        // for(let triangle of triangleData.outputs) {
-        //     for(let i=0; i<3; i++) {
-        //         let u = triangle.points[i];
-        //         let v = triangle.points[(i===2)?0:2];
-        //         let id1 = u.x+','+u.y+','+v.x+','+v.y;
-        //         let id2 = v.x+','+v.y+','+u.x+','+u.y;
-        //         if(polygonEdges[id1]||polygonEdges[id2]||showingEdges[id1]||showingEdges[id2]) continue;
-        //         showingEdges[id1] = true;
-        //     }
-        // }
         for(let i=0; i<triangleData.outputs.length; i++) {
             triangleData.outputs[i].id = i;
         }
@@ -94,6 +78,15 @@ let TriPlay = function () {
                 }
             });
         trianglePoint.exit().remove();
+
+        infog.select("#event-label")
+            .text("Event: "+ TriStatus[SelectTriStatus].event_type)
+            .each(function (d, i) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(EventTextAttrs)) {
+                    ele.attr(key, EventTextAttrs[key]);
+                }
+            });
     };
 
     that.step = function(flag = 0) {
@@ -122,6 +115,9 @@ let TriPlay = function () {
         $("#tri-label").text("Selected Trapezoid: None");
         triG.selectAll("."+TriangleAttrs["class"]).data([]).exit().remove();
         triG.selectAll("."+TriangleCurPoint["class"]).data([]).exit().remove();
+        infog.select("#event-label")
+            .text("Event: None")
+            .attr("opacity", 0);
     };
 
     that.init = function () {

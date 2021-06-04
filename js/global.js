@@ -80,6 +80,15 @@ TrapezoidEdgeAttrs = {
     fill: d => TrapezoidColorThemes[DecompIDtoIdx[d.id]%TrapezoidColorThemes.length],
     opacity: 1,
 };
+EventTextAttrs = {
+    "font-size": "20px",
+    "text-anchor": "start",
+    "font-style": "italic",
+    fill: "#DCDCDC",
+    x: 10,
+    y: 30,
+    opacity: 1
+};
 TrapezoidIndex = {
     class: "trapezoid-index",
     "font-size": "20px",
@@ -97,7 +106,7 @@ TrapezoidIndex = {
         for(let i=0; i<d.points.length; i++) {
             sum_y += d.points[i].y;
         }
-        return sum_y/d.points.length
+        return sum_y/d.points.length+10
     }
 };
 TriangleAttrs = {

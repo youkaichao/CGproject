@@ -3,12 +3,14 @@ let FiskPlay = function () {
     let svg = null;
     let fiskG = null;
     let triplay = null;
+    let infog = null;
     let answer = [];
     let events = [];
     let fiskStatus = -1;
 
     that.__init = function() {
         svg = d3.select("#mainsvg");
+        infog = svg.select("#infog");
         fiskG = svg.append("g").attr("id", "fisk-g");
 
         $("#fisk-next-comp-btn").click(() => {that.step(0)});
@@ -89,6 +91,9 @@ let FiskPlay = function () {
             triplay.step(3);
         }
         TriangulationUseBuffer = false;
+        infog.select("#event-label")
+            .text("Event: None")
+            .attr("opacity", 0);
         d3.selectAll("."+TriangleCurPoint["class"]).data([]).exit().remove();
     };
 
