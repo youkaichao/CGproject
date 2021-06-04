@@ -203,9 +203,9 @@ function MonotoneDecomp(points) {
 function isReflex(s, t, c) {
     // TODO handle collinear
     if (c.position === "left") {
-        return toLeft(s, t, c) === -1;
+        return toLeft(s, t, c) === -1 || toLeft(s, t, c) === 0;
     } else {
-        return toLeft(s, t, c) === 1;
+        return toLeft(s, t, c) === 1 || toLeft(s, t, c) === 0;
     }
 }
 
@@ -233,19 +233,44 @@ function TriangulatingMonotonePolygon(points) {
     }
 
     // TODO handle same y coordinates
+    let leftChains = [], rightChains = [];
     let lowest = 0, highest = 0;
     for (let i = 1; i < points.length; i++) {
         if (points[i].y < points[lowest].y) lowest = i;
         if (points[i].y > points[highest].y) highest = i;
     }
+    console.log(points);
+    console.log(lowest);
+    console.log(highest);
     for (let i = lowest; i !== highest; i = (i+1) % points.length) {
         points[i].position = "right";
+        rightChains.push(points[i]);
     }
     for (let i = highest; i !== lowest; i = (i+1) % points.length) {
         points[i].position = "left";
+        leftChains.push(points[i]);
+    }
+    leftChains = leftChains.reverse();
+
+    // TODO merge left and right chains by y-axis
+    // points.sort((a, b) => a.y - b.y);
+
+    let mergedChains = [];
+    let indexLeft = 0, indexRight = 0;
+    while (indexLeft < leftChains.length && indexRight < rightChains.length) {
+        if (leftChains[indexLeft].y < rightChains[indexRight].y) {
+            mergedChains.push(leftChains[indexLeft++]);
+        } else {
+            mergedChains.push(rightChains[indexRight++]);
+        }
     }
 
-    points.sort((a, b) => a.y - b.y);
+    if (indexRight < rightChains.length) {
+        mergedChains = mergedChains.concat(rightChains.slice(indexRight));
+    } else {
+        mergedChains = mergedChains.concat(leftChains.slice(indexLeft));
+    }
+    points = mergedChains;
 
     let stack = [];
     stack.push(points[0]);
