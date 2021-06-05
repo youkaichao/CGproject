@@ -189,6 +189,8 @@ function MonotoneDecomp(points) {
     // init points id
     for(let id=0; id<points.length; id++) {
         points[id].id = id;
+        points[id].x += 1e-5 * Math.random();
+        points[id].y += 1e-5 * Math.random();
     }
     let [output, events] = onePass(points);
     let answer = [];
