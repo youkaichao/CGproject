@@ -1,9 +1,10 @@
 <html>
     <head>
-        <title>多边形的三角剖分</title>
+        <title>多边形三染色</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link href="css/lib/bootstrap.min.css" rel="stylesheet">
         <link href="css/lib/bootstrap-icons.css" rel="stylesheet">
+        <link href="css/lib/introjs.min.css" rel="stylesheet">
         <link href="css/layout.css" rel="stylesheet">
     </head>
     <body>
@@ -44,6 +45,9 @@
                         <i class="bi bi-chevron-right bt-btn" id="fisk-next-comp-btn"></i>
                         <i class="bi bi-chevron-double-right bt-btn" id="fisk-end-comp-btn"></i>
                     </div>
+                    <div id="intro">
+                        <i class="bi bi-patch-question bt-btn" id="intro-btn"></i>
+                    </div>
                 </div>
                 <svg id="mainsvg">
                     <g id="infog">
@@ -56,6 +60,7 @@
         <script src="js/lib/bootstrap.bundle.min.js"></script>
         <script src="js/lib/d3.v6.js"></script>
         <script src="js/lib/FileSaver.js"></script>
+        <script src="js/lib/intro.min.js"></script>
         <script src="js/global.js"></script>
         <script src="js/utils.js"></script>
         <script src="js/input.js"></script>

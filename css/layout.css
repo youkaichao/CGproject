@@ -104,3 +104,14 @@
 #tri-label {
     width: 150px;
 }
+
+.customTooltip * {
+  color: gray;
+  font-size: 10px
+}
+
+#intro {
+    flex: 100 1 auto;
+    display: flex;
+    justify-content: flex-end;
+}
