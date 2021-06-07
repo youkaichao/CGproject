@@ -16,7 +16,7 @@ function intro() {
         tooltipClass: 'customTooltip',
         steps: [{
           title: '欢迎！',
-          intro: '欢迎使用“多边形三染色”算法演示系统！'
+          intro: '欢迎使用“画廊问题求解”算法演示系统！'
         }, {
           element: document.querySelector('#controlrow'),
           intro: '在这里，你可以输入任意的简单多边形，并控制算法的演示流程'
