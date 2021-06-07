@@ -27,6 +27,14 @@ function negateP(p) {
     return {'x': - p.x, 'y': -p.y, 'id': p.id};
 }
 
+function arrayEquals(a, b) {
+    return Array.isArray(a) &&
+      Array.isArray(b) &&
+      a.length === b.length &&
+      a.every((val, index) => val === b[index]);
+}
+
+
 let tid = 0;
 
 class Trapezoid {
@@ -103,7 +111,37 @@ class Trapezoid {
         t2.chain = [right, p].concat(this.chain.slice(index));
         return [t1, t2];
     }
+
+    equals(t)
+    {
+       return t.id == this.id && arrayEquals(t.chain, this.chain) && point_equal(t.helper, this.helper); 
+    }
 }
+
+
+class SweepLine{
+    constructor(){
+        this.data = [];
+    }
+
+    map(f){//语义是把所有的元素都用f作用一遍
+        return this.data.map(f);
+    }
+
+    searchPoint(p){// 寻找p点所在的所有Trapezoid，返回类型为array of Trapezoid。最多返回两个Trapezoid。（返回的是引用）
+        let in_ts = this.data.filter(e => e.in_test(p));
+        return in_ts;
+    }
+
+    addTrapezoid(t){// 把引用加进sweepline，外部还可以修改helper等属性
+        this.data.push(t);
+    }
+
+    removeTrapezoid(t){//删除sweepline中对t的引用，但是t还在
+        this.data = this.data.filter(e => !e.equals(t));
+    }
+}
+
 
 function onePass(points) {
     let events = [];
@@ -111,7 +149,7 @@ function onePass(points) {
     let indices = [...Array(points.length).keys()];
     indices.sort((a, b) => points[a].y - points[b].y);
 
-    let sweepline = []; // 扫描线，用于存放四边形
+    let sweepline = new SweepLine(); // 扫描线，用于存放四边形
     let output = []; // 存放切出来的多边形（多边形的形式是 point array）
 
     function generateEvent(point, name) {
@@ -128,7 +166,7 @@ function onePass(points) {
         // in_ts 表示包含p的四边形 
         let index = indices[i];
         let p = points[index];
-        let in_ts = sweepline.map((v, i) => [v, i]).filter(e => e[0].in_test(p));
+        let in_ts = sweepline.searchPoint(p);
 
         // 取出p两边的点
         let prev = (index + points.length - 1) % points.length;
@@ -139,15 +177,15 @@ function onePass(points) {
         // p 代表一个新的四边形，则两边的点还没check，比它低
         if(in_ts.length === 0)
         {
-            sweepline.push(new Trapezoid(p, prev, next));
+            sweepline.addTrapezoid(new Trapezoid(p, prev, next));
             events.push(generateEvent(p, 'insert'));
         }
         else if(in_ts.length === 1)
         {
-            let [t, t_index] = in_ts[0];
+            let t = in_ts[0];
             if(point_equal(p, t.head) && point_equal(p, t.tail))
             {// 四边形封闭了
-                sweepline.splice(t_index, 1);
+                sweepline.removeTrapezoid(t);
                 t.chain.splice(0, 1);
                 output.push(t);
                 events.push(generateEvent(p, 'output'));
@@ -165,20 +203,22 @@ function onePass(points) {
                 events.push(generateEvent(p, 'right'));
             }else{
                 // 在四边形内部，该split了
+                sweepline.removeTrapezoid(t);
                 let [t1, t2] = t.split(p, next, prev);
-                sweepline.splice(t_index, 1, t1, t2);
+                sweepline.addTrapezoid(t1);
+                sweepline.addTrapezoid(t2);
                 events.push(generateEvent(p, 'split'));
             }
         }
         else if(in_ts.length === 2)
         {// 两个T要merge
-            let [t1, t1_index] = in_ts[0];
-            let [t2, t2_index] = in_ts[1];
-            sweepline.splice(t1_index, 1);
-            sweepline.splice(t2_index - 1, 1);
+            let t1 = in_ts[0];
+            let t2 = in_ts[1];
+            sweepline.removeTrapezoid(t1);
+            sweepline.removeTrapezoid(t2);
             let s = new Trapezoid();
             s.merge(t1, t2);
-            sweepline.push(s);
+            sweepline.addTrapezoid(s);
             events.push(generateEvent(p, 'merge'));
         }
     }
