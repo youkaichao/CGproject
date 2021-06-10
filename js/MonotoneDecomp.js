@@ -104,7 +104,7 @@ class Trapezoid {
         {
             [left, right] = [next, prev];
         }
-        t1.helper = p; 
+        t1.helper = p;
         t1.chain = this.chain.slice(0, index + 1).concat([p, left]);
 
         t2.helper = p;
@@ -114,7 +114,7 @@ class Trapezoid {
 
     equals(t)
     {
-       return t.id == this.id && arrayEquals(t.chain, this.chain) && point_equal(t.helper, this.helper); 
+       return t.id == this.id && arrayEquals(t.chain, this.chain) && point_equal(t.helper, this.helper);
     }
 }
 
@@ -142,6 +142,82 @@ class SweepLine{
     }
 }
 
+class Segment {
+    constructor(s, t) {
+        this.s = s;
+        this.t = t;
+    }
+
+    intersectsWith(y) { // return the coordinates that intersects with y
+        let sx = this.s.x, sy = this.s.y, tx = this.t.x, ty = this.t.y;
+        if (Math.abs(ty - sy) < Number.EPSILON) return sx;
+        else return sx + (tx - sx) / (ty - sy) * (y - sy);
+    }
+}
+
+sweepLineY = 0;
+// compare intersection(right border of t1, y=sweepLineY).x and intersection(right border of t2, y=sweepLineY).x
+function cmpTrap(t1, t2) {
+    let x1 = (new Segment(t1.tail, t1.second_tail)).intersectsWith(sweepLineY),
+        x2 = (new Segment(t2.tail, t2.second_tail)).intersectsWith(sweepLineY);
+    t1.x = x1; t1.y = sweepLineY;
+    t2.x = x2; t2.y = sweepLineY;
+    if (Math.abs(x1 - x2) < 10e-10) {
+        return 0;
+    } else if (x1 < x2) {
+        return -1;
+    } else {
+        return 1;
+    }
+}
+
+class BBSTBasedSweepLine {
+    constructor() {
+        this.tree = new RBTree(cmpTrap);
+    }
+
+    map(f){//语义是把所有的元素都用f作用一遍
+        let outputs = [];
+        this.tree.each(function (k) {
+            outputs.push(f(k));
+        })
+        return outputs;
+    }
+
+    searchPoint(p){// 寻找p点所在的所有Trapezoid，返回类型为array of Trapezoid。最多返回两个Trapezoid。（返回的是引用）
+        let query = new Trapezoid(p, p, p);
+        let it = this.tree.lowerBound(query), data;
+
+        if (it !== null) it.prev();
+        if (it !== null) it.prev();
+        let results = [];
+        // find the first trapezoid including p
+        while ((data = it.next()) !== null) {
+            if(data.in_test(p)) {
+                results.push(data);
+                break;
+            }
+        }
+        // add trapezoid until p is not inside
+        while((data = it.next()) !== null) {
+            if(data.in_test(p)) {
+                results.push(data);
+            } else {
+                break;
+            }
+        }
+        return results;
+    }
+
+    addTrapezoid(t){// 把引用加进sweepline，外部还可以修改helper等属性
+        this.tree.insert(t);
+    }
+
+    removeTrapezoid(t){//删除sweepline中对t的引用，但是t还在
+        this.tree.remove(t);
+    }
+}
+
 
 function onePass(points) {
     let events = [];
@@ -149,7 +225,7 @@ function onePass(points) {
     let indices = [...Array(points.length).keys()];
     indices.sort((a, b) => points[a].y - points[b].y);
 
-    let sweepline = new SweepLine(); // 扫描线，用于存放四边形
+    let sweepline = new BBSTBasedSweepLine(); // 扫描线，用于存放四边形
     let output = []; // 存放切出来的多边形（多边形的形式是 point array）
 
     function generateEvent(point, name) {
@@ -163,9 +239,10 @@ function onePass(points) {
 
     for(let i = 0; i < indices.length; ++i)
     {
-        // in_ts 表示包含p的四边形 
+        // in_ts 表示包含p的四边形
         let index = indices[i];
         let p = points[index];
+        sweepLineY = p.y;
         let in_ts = sweepline.searchPoint(p);
 
         // 取出p两边的点
@@ -173,7 +250,6 @@ function onePass(points) {
         prev = points[prev];
         let next = (index + 1) % points.length;
         next = points[next];
-
         // p 代表一个新的四边形，则两边的点还没check，比它低
         if(in_ts.length === 0)
         {
