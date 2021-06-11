@@ -34,6 +34,21 @@ function arrayEquals(a, b) {
       a.every((val, index) => val === b[index]);
 }
 
+sweepLineY = 0;
+// compare intersection(right border of t1, y=sweepLineY).x and intersection(right border of t2, y=sweepLineY).x
+function cmpTrap(t1, t2) {
+    let x1 = (new Segment(t1.tail, t1.second_tail)).intersectsWith(sweepLineY),
+        x2 = (new Segment(t2.tail, t2.second_tail)).intersectsWith(sweepLineY);
+    t1.x = x1; t1.y = sweepLineY;
+    t2.x = x2; t2.y = sweepLineY;
+    if (Math.abs(x1 - x2) < 10e-10) {
+        return 0;
+    } else if (x1 < x2) {
+        return -1;
+    } else {
+        return 1;
+    }
+}
 
 let tid = 0;
 
@@ -81,7 +96,7 @@ class Trapezoid {
     }
 
     merge(t1, t2){
-        if(point_equal(t1.head, t2.tail))
+        if(cmpTrap(t1, t2) > 0)
         {
             let t = t2;
             t2 = t1;
@@ -152,22 +167,6 @@ class Segment {
         let sx = this.s.x, sy = this.s.y, tx = this.t.x, ty = this.t.y;
         if (Math.abs(ty - sy) < Number.EPSILON) return sx;
         else return sx + (tx - sx) / (ty - sy) * (y - sy);
-    }
-}
-
-sweepLineY = 0;
-// compare intersection(right border of t1, y=sweepLineY).x and intersection(right border of t2, y=sweepLineY).x
-function cmpTrap(t1, t2) {
-    let x1 = (new Segment(t1.tail, t1.second_tail)).intersectsWith(sweepLineY),
-        x2 = (new Segment(t2.tail, t2.second_tail)).intersectsWith(sweepLineY);
-    t1.x = x1; t1.y = sweepLineY;
-    t2.x = x2; t2.y = sweepLineY;
-    if (Math.abs(x1 - x2) < 10e-10) {
-        return 0;
-    } else if (x1 < x2) {
-        return -1;
-    } else {
-        return 1;
     }
 }
 
