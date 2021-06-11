@@ -41,7 +41,7 @@ function cmpTrap(t1, t2) {
         x2 = (new Segment(t2.tail, t2.second_tail)).intersectsWith(sweepLineY);
     t1.x = x1; t1.y = sweepLineY;
     t2.x = x2; t2.y = sweepLineY;
-    if (Math.abs(x1 - x2) < 10e-10) {
+    if (Math.abs(x1 - x2) < 10e-7) {
         return 0;
     } else if (x1 < x2) {
         return -1;
@@ -179,7 +179,7 @@ class BBSTBasedSweepLine {
         let outputs = [];
         this.tree.each(function (k) {
             outputs.push(f(k));
-        })
+        });
         return outputs;
     }
 
@@ -443,3 +443,28 @@ function TriangulatingMonotonePolygon(points) {
 //     });
 //     // console.log(events);
 // });
+
+
+function Triangulate(points) {
+    let [answer, events] = MonotoneDecomp(points);
+    let results = [];
+    answer.forEach(each => {
+        let t = new Trapezoid();
+        t.chain = each;
+
+        let [triangulations, events] = TriangulatingMonotonePolygon(each);
+        results = results.concat(triangulations);
+    });
+    return results;
+}
+
+function checkTriangulate(points) {
+    console.log("Test:");
+    let expected_num_tri = points.length - 2;
+    let output = Triangulate(points);
+    console.log(points);
+    console.log(output);
+    console.log("\tNum of triangles: expected", expected_num_tri, expected_num_tri===output.length?"=":"!=", "output", output.length);
+    // console.log("\tNum of triangles: expected", expected_num_tri, expected_num_tri===output.length?"=":"!=", "output", output.length);
+
+}

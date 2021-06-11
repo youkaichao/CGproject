@@ -211,5 +211,3 @@ function double_rotate(root, dir) {
     root.set_child(!dir, single_rotate(root.get_child(!dir), !dir));
     return single_rotate(root, dir);
 }
-
-module.exports = RBTree;

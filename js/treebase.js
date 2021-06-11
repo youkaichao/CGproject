@@ -1,4 +1,5 @@
-function TreeBase() {}
+function TreeBase() {
+}
 
 // removes all nodes from the tree
 TreeBase.prototype.clear = function() {
@@ -228,4 +229,3 @@ Iterator.prototype._maxNode = function(start) {
     this._cursor = start;
 };
 
-module.exports = TreeBase;
