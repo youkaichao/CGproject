@@ -458,13 +458,48 @@ function Triangulate(points) {
     return results;
 }
 
-function checkTriangulate(points) {
-    console.log("Test:");
-    let expected_num_tri = points.length - 2;
-    let output = Triangulate(points);
-    console.log(points);
-    console.log(output);
-    console.log("\tNum of triangles: expected", expected_num_tri, expected_num_tri===output.length?"=":"!=", "output", output.length);
-    // console.log("\tNum of triangles: expected", expected_num_tri, expected_num_tri===output.length?"=":"!=", "output", output.length);
+class Counter {
+    constructor() {
+        this.data = new Map();
+    }
+    add(s) {
+        if (!this.data.has(s)) {
+            this.data.set(s, 1);
+        } else {
+            this.data.set(s, this.data.get(s)+1);
+        }
+    }
 
+    get(s) {
+        return this.data.get(s);
+    }
+}
+
+// check the correctness of triangulation
+function checkTriangulate(points, output) {
+    let count = new Counter();
+    function toString(t1, t2) {
+        return t1.id.toString() + "->" + t2.id.toString();
+    }
+    for (let t of output) {
+        t = t.sort(function (t1, t2) {
+            return t1.id - t2.id;
+        });
+        count.add(toString(t[0], t[1]));
+        count.add(toString(t[0], t[2]));
+        count.add(toString(t[1], t[2]));
+    }
+
+    let E1 = new Set(), E2 = new Set(), E3 = new Set();
+    for (let [k, v] of count.data.entries()) {
+        if (v === 1) {
+            E1.add(k);
+        } else if (v === 2) {
+            E2.add(k);
+        } else {
+            E3.add(k);
+        }
+    }
+    console.log("N=",points.length,"E1=",E1.size, "E2=",E2.size,"E3=",E3.size);
+    return E1.size === points.length && E2.size === points.length - 3 && E3.size === 0;
 }
