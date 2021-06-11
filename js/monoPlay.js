@@ -192,6 +192,7 @@ let MonoPlay = function () {
                 console.log("ERROR: can't decomposite monotone, points.length = 0");
                 return
             }
+            console.log(checkTriangulate(SelectPoints, Triangulate(SelectPoints)));
             let [answer, events] = MonotoneDecomp(SelectPoints);
             PolyAnswer = answer;
             console.log("mono decomp result:", answer, events);
