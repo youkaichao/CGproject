@@ -13,7 +13,7 @@ let MonoPlay = function () {
 
     that.__init = function() {
         svg = d3.select("#mainsvg");
-        monoG = svg.append("g").attr("id", "mono-g");
+        monoG = svg.select("#mono-g");
         infog = svg.select("#infog");
 
 

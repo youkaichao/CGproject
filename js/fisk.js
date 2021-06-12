@@ -11,7 +11,7 @@ let FiskPlay = function () {
     that.__init = function() {
         svg = d3.select("#mainsvg");
         infog = svg.select("#infog");
-        fiskG = svg.append("g").attr("id", "fisk-g");
+        fiskG = svg.select("#fisk-g");
 
         $("#fisk-next-comp-btn").click(() => {that.step(0)});
         $("#fisk-last-comp-btn").click(() => {that.step(1)});

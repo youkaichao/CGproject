@@ -10,7 +10,7 @@ let TriPlay = function () {
     that.__init = function() {
         svg = d3.select("#mainsvg");
         infog = svg.select("#infog");
-        triG = svg.append("g").attr("id", "tri-g");
+        triG = svg.select("#tri-g");
 
         $("#tri-next-comp-btn").click(() => {that.step(0)});
         $("#tri-last-comp-btn").click(() => {that.step(1)});

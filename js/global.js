@@ -1,4 +1,5 @@
 SelectPoints = [];
+SelectPointsDict = {};
 PolygonEdges = [];
 MonoStatus = [];
 PolyAnswer = [];
@@ -12,10 +13,11 @@ SelectMonoTriId = -1;
 TriStatus = [];
 SelectTriStatus = -1;
 ColorSchemes = ["#edf2fb","#e2eafc","#d7e3fc","#ccdbfd","#c1d3fe","#b6ccfe","#abc4ff"];
+PointR = 8;
 //     LAYOUT     ATTRS          //
 PointAttrs = {
     class: "point",
-    r: 3,
+    r: PointR,
     cx: d => d.x,
     cy: d => d.y,
     fill: "rgb(127,127,127)"
@@ -37,7 +39,7 @@ MonoSweeplineAttrs = {
 MonoHelperAttrs = {
     class: "helper",
     fill: "red",
-    r: 5,
+    r: PointR,
     cx: d => d.helper.x,
     cy: d => d.helper.y
 };
@@ -121,15 +123,25 @@ TriangleAttrs = {
 TriangleCurPoint = {
     class: "tri-cur-point",
     fill: "red",
-    r: 5,
+    r: PointR,
     cx: d=>d.x,
     cy: d=>d.y
 };
 FiskColors=["red", "yellow", "green"];
 FiskPointAttrs = {
     class: "fiskPoint",
-    r: 3,
+    r: PointR,
     cx: d => d.x,
     cy: d => d.y,
     fill: d => FiskColors[d.c]
+}
+IndexTextAttrs = {
+    class: "index-text",
+    "font-size": "8px",
+    "text-anchor": "middle",
+    // "font-style": "italic",
+    fill: "black",
+    x: d => SelectPointsDict[d.id].x,
+    y: d => SelectPointsDict[d.id].y,
+    opacity: 1
 };
