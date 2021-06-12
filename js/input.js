@@ -74,8 +74,11 @@ let Input = function() {
                 let width = d3.select("#mainsvg").node().clientWidth;
                 let height = d3.select("#mainsvg").node().clientHeight;
                 that.center_and_scale(points, width, height);
+                let i=0;
                 for(let point of points) {
+                    point.id = i;
                     that.addPoint(point);
+                    i++;
                 }
                 that.update_view();
             };

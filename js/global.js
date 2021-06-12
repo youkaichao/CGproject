@@ -5,14 +5,24 @@ MonoStatus = [];
 PolyAnswer = [];
 DecompIDtoIdx = {};
 SelectMonoStatus = -1;
-TrapezoidColorThemes = ["#ffcbf2","#f3c4fb","#ecbcfd","#e5b3fe","#e2afff","#deaaff","#d8bbff"];
 TriangulationUseBuffer = false;
 
 TriAnswer = null;
 SelectMonoTriId = -1;
 TriStatus = [];
 SelectTriStatus = -1;
-ColorSchemes = ["#edf2fb","#e2eafc","#d7e3fc","#ccdbfd","#c1d3fe","#b6ccfe","#abc4ff"];
+// 1.
+// TrapezoidColorThemes = ["#ffcbf2","#f3c4fb","#ecbcfd","#e5b3fe","#e2afff","#deaaff","#d8bbff"];
+// TriangleColorSchemes = ["#edf2fb","#e2eafc","#d7e3fc","#ccdbfd","#c1d3fe","#b6ccfe","#abc4ff"];
+// 2.
+// TrapezoidColorThemes = ["#86e3ce", "#d0e6a5", "#ffdd94", "#fab97b", "#ccabd8"];
+// TriangleColorSchemes = ["#85cbcc", "#a8dee0", "#f9e2ae", "#fbc78d", "#a7d676"];
+// 3.
+// TrapezoidColorThemes = ["#60efd8", "#bef2e5", "#c5e7f7", "#79ceed", "#6f89a2"];
+// TriangleColorSchemes = ["#5aa7a7", "#96d7c6", "#bac94a", "#e2d36b", "#6c8cbf"];
+// 4.
+TrapezoidColorThemes = ["#ff7b89", "#ba5082", "#6f5f90", "#758eb7", "#a5cad2"];
+TriangleColorSchemes = ["#47cacc", "#63bcc9", "#cdb3d4", "#e7b7c8", "#ffbe88"];
 PointR = 8;
 //     LAYOUT     ATTRS          //
 PointAttrs = {
@@ -113,7 +123,7 @@ TrapezoidIndex = {
 };
 TriangleAttrs = {
     class: "triangle-piece",
-    fill: d => ColorSchemes[d.id%ColorSchemes.length],
+    fill: d => TriangleColorSchemes[d.id%TriangleColorSchemes.length],
     opacity: 0.8,
     d: d => {
         let ps = d.points;
@@ -142,6 +152,6 @@ IndexTextAttrs = {
     // "font-style": "italic",
     fill: "black",
     x: d => SelectPointsDict[d.id].x,
-    y: d => SelectPointsDict[d.id].y,
+    y: d => SelectPointsDict[d.id].y+4,
     opacity: 1
 };
