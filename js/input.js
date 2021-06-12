@@ -60,13 +60,15 @@ let Input = function() {
             $("#form-label").text("Random Level: "+ randomLevel);
         });
 
-        $("#load-btn").change(function () {
+        $("#load-btn").on("input", function () {
             let file = this.files && this.files[0];
+            let ele = this;
             if (!file) {
                 return;
             }
             let fileReader = new FileReader();
             fileReader.onload = function(e) {
+                ele.value = null;
                 that.clear();
                 let text = e.target.result;
                 let points = JSON.parse(text);
