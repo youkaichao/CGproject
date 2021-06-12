@@ -1,5 +1,6 @@
 function full_test(_points) {
     let points = [];
+    let fiskanswer = [];
     if((typeof _points) === "number") {
         let N = _points;
         points = [];
@@ -17,15 +18,15 @@ function full_test(_points) {
         points = _points;
     }
     let start = Date.now();
-    let [answer, events] = MonotoneDecomp(points);
+    let [monoanswer, events] = MonotoneDecomp(points);
 
     let triangles = [];
-    answer.forEach(each => {
+    monoanswer.forEach(each => {
         let [triangulations, events] = TriangulatingMonotonePolygon(each);
         triangles = triangles.concat(triangulations);
     });
-    [answer, events] = fiskPlay.fisk(triangles);
+    [fiskanswer, events] = fiskPlay.fisk(triangles);
     let end = Date.now();
     console.log(`running time:${end-start}ms`);
-    return answer
+    return [monoanswer, triangles, fiskanswer];
 }
