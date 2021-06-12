@@ -1,4 +1,4 @@
-function checkPoints(_points) {
+function full_test(_points) {
     let points = [];
     if((typeof _points) === "number") {
         let N = _points;
