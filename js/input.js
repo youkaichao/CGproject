@@ -59,7 +59,7 @@ let Input = function() {
         });
         $("#randomlevel").on("input", function () {
             randomLevel = parseInt($(this).val());
-            $("#form-label").text("Random Level: "+ randomLevel);
+            $("#form-label").text("Number of Random Points: "+ randomLevel);
         });
 
         $("#load-btn").on("input", function () {
