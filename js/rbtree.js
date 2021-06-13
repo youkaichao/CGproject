@@ -1,3 +1,4 @@
+// reference: https://github.com/vadimg/js_bintrees
 function Node(data) {
     this.data = data;
     this.left = null;
