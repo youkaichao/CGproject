@@ -18,15 +18,15 @@ function full_test(_points) {
         points = _points;
     }
     let start = Date.now();
-    let [monoanswer, events] = MonotoneDecomp(points);
-
-    let triangles = [];
-    monoanswer.forEach(each => {
-        let [triangulations, events] = TriangulatingMonotonePolygon(each);
-        triangles = triangles.concat(triangulations);
-    });
-    [fiskanswer, events] = fiskPlay.fisk(triangles);
+    let triangles = Triangulate(points);
+    let correct = checkTriangulate(points, triangles);
+    console.log("triangulation correctness:", correct);
     let end = Date.now();
-    console.log(`running time:${end-start}ms`);
-    return [monoanswer, triangles, fiskanswer];
+    console.log(`triangle running time:${end-start}ms`);
+
+    start = end;
+    [fiskanswer, events] = fiskPlay.fisk(triangles);
+    end = Date.now();
+    console.log(`fisk color running time:${end-start}ms`);
+    return [triangles, fiskanswer];
 }

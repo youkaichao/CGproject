@@ -336,18 +336,20 @@ function CCW(a, b, c) {
 
 }
 
-function TriangulatingMonotonePolygon(points) {
+function TriangulatingMonotonePolygon(points, report_event=true) {
     points = Object.assign([], points);
     let output = []; // 存放切出来的三角形（三角形的形式是 point array）
     let events = [];
 
     function generateEvent(point, name, c, stack) {
-        return {
-            'event_type': name,
-            'outputs': output.map(ps => ({'points': ps.map(p => ({'x': p.x, 'y': p.y, 'id': p.id}))})),
-            'c': {'x': c.x, 'y': c.y, 'id': c.id}, // the current vertex
-            'stack': stack.map(p => ({'x': p.x, 'y': p.y, 'id': p.id})),
-        };
+        if(!report_event)
+            return {};
+        else return {
+                'event_type': name,
+                'outputs': output.map(ps => ({'points': ps.map(p => ({'x': p.x, 'y': p.y, 'id': p.id}))})),
+                'c': {'x': c.x, 'y': c.y, 'id': c.id}, // the current vertex
+                'stack': stack.map(p => ({'x': p.x, 'y': p.y, 'id': p.id})),
+            };
     }
 
     let leftChains = [], rightChains = [];
@@ -447,14 +449,14 @@ function TriangulatingMonotonePolygon(points) {
 // });
 
 
-function Triangulate(points) {
-    let [answer, events] = MonotoneDecomp(points);
+function Triangulate(points, report_event=false) {
+    let [answer, events] = MonotoneDecomp(points, report_event);
     let results = [];
     answer.forEach(each => {
         let t = new Trapezoid();
         t.chain = each;
 
-        let [triangulations, events] = TriangulatingMonotonePolygon(each);
+        let [triangulations, events] = TriangulatingMonotonePolygon(each, report_event);
         results = results.concat(triangulations);
     });
     return results;
