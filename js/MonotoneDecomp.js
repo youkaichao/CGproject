@@ -41,7 +41,23 @@ function cmpTrap(t1, t2) {
         x2 = (new Segment(t2.tail, t2.second_tail)).intersectsWith(sweepLineY);
     t1.x = x1; t1.y = sweepLineY;
     t2.x = x2; t2.y = sweepLineY;
-    if (Math.abs(x1 - x2) < 10e-7) {
+    if (Math.abs(x1 - x2) < 10e-8) {
+        return 0;
+    } else if (x1 < x2) {
+        return -1;
+    } else {
+        return 1;
+    }
+}
+
+// compare intersection(left border of t1, y=sweepLineY).x and intersection(left border of t2, y=sweepLineY).x
+function cmpTrapLeft(t1, t2) {
+    let x1, x2;
+    x1 = (new Segment(t1.head, t1.second_head)).intersectsWith(sweepLineY),
+        x2 = (new Segment(t2.head, t2.second_head)).intersectsWith(sweepLineY);
+    t1.lx = x1; t1.ly = sweepLineY;
+    t2.lx = x2; t2.ly = sweepLineY;
+    if (Math.abs(x1 - x2) < 10e-8) {
         return 0;
     } else if (x1 < x2) {
         return -1;
@@ -166,7 +182,7 @@ class Segment {
     intersectsWith(y) { // return the coordinates that intersects with y
         let sx = this.s.x, sy = this.s.y, tx = this.t.x, ty = this.t.y;
         if (Math.abs(ty - sy) < Number.EPSILON) return sx;
-        else return sx + (tx - sx) / (ty - sy) * (y - sy);
+        else return sx + (tx - sx) * (y - sy) / (ty - sy);
     }
 }
 
@@ -184,18 +200,21 @@ class BBSTBasedSweepLine {
     }
 
     searchPoint(p){// 寻找p点所在的所有Trapezoid，返回类型为array of Trapezoid。最多返回两个Trapezoid。（返回的是引用）
+        sweepLineY = p.y;
         let query = new Trapezoid(p, p, p);
         let it = this.tree.lowerBound(query), data;
 
         if (it !== null) it.prev();
         if (it !== null) it.prev();
         let results = [];
+
         // find the first trapezoid including p
         while ((data = it.next()) !== null) {
             if(data.in_test(p)) {
                 results.push(data);
                 break;
             }
+            if (cmpTrapLeft(query, data) === -1) break;
         }
         // add trapezoid until p is not inside
         while((data = it.next()) !== null) {
