@@ -218,7 +218,7 @@ class BBSTBasedSweepLine {
 }
 
 
-function onePass(points) {
+function onePass(points, report_event=true) {
     let events = [];
     // 按照y坐标升序排列，屏幕方向从上到下
     let indices = [...Array(points.length).keys()];
@@ -228,6 +228,8 @@ function onePass(points) {
     let output = []; // 存放切出来的多边形（多边形的形式是 point array）
 
     function generateEvent(point, name) {
+        if(!report_event)
+            return {};
         return {
             'event_type': name,
             'sweepline': point.y,
@@ -300,17 +302,17 @@ function onePass(points) {
     return [output, events];
 }
 
-function MonotoneDecomp(points) {
+function MonotoneDecomp(points, report_event=true) {
     // init points id
     for(let id=0; id<points.length; id++) {
         points[id].id = id;
         points[id].x += 1e-5 * Math.random();
         points[id].y += 1e-5 * Math.random();
     }
-    let [output, events] = onePass(points);
+    let [output, events] = onePass(points, report_event=report_event);
     let answer = [];
     output.forEach(t1 => {
-        onePass(t1.chain.map(negateP))[0].forEach(t2 => {
+        onePass(t1.chain.map(negateP), report_event=report_event)[0].forEach(t2 => {
             answer.push(t2.chain.map(negateP));
         });
     });
