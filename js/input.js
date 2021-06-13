@@ -282,14 +282,38 @@ let Input = function() {
         let points = [];
         for(let i = 0; i < N; ++i) {
             let point = {};
-            point.angle = Math.random() * 2 * Math.PI;
+            while (true) {
+                point.angle = Math.random() * 2 * Math.PI;
+                let fineangle = true;
+                for(let p of points) {
+                    if(Math.abs(p.angle-point.angle)<5/360*2*Math.PI){
+                        fineangle = false;
+                        break;
+                    }
+                }
+                if(fineangle) break;
+            }
             point.radius = Math.random() * 200 + 100;
-            point.x = d3.select("#mainsvg").node().clientWidth/2 + point.radius * Math.cos(point.angle);
-            point.y = d3.select("#mainsvg").node().clientHeight/2 + point.radius * Math.sin(point.angle);
-            point.id = i;
+            point.x = point.radius * Math.cos(point.angle);
+            point.y = point.radius * Math.sin(point.angle);
             points.push(point);
         }
         points.sort((a, b) => a.angle - b.angle);
+        // points transform
+        let width = d3.select("#mainsvg").node().clientWidth;
+        let height = d3.select("#mainsvg").node().clientHeight;
+        that.center_and_scale(points, width, height);
+        for(let i=0; i<points.length; i++) {
+            let u = points[(i+points.length-1)%points.length];
+            let p = points[i];
+            let v = points[(i+1)%points.length];
+            while((distance(u,p)<PointR*3) || (distance(v,p)<PointR*3)) {
+                p.x += Math.cos(p.angle);
+                p.y += Math.sin(p.angle);
+            }
+            p.id = i;
+        }
+
         for(let point of points) {
             that.addPoint(point);
         }
