@@ -34,7 +34,7 @@ function arrayEquals(a, b) {
       a.every((val, index) => val === b[index]);
 }
 
-sweepLineY = 0;
+let sweepLineY = 0;
 // compare intersection(right border of t1, y=sweepLineY).x and intersection(right border of t2, y=sweepLineY).x
 function cmpTrap(t1, t2) {
     let x1 = (new Segment(t1.tail, t1.second_tail)).intersectsWith(sweepLineY),

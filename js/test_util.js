@@ -17,13 +17,29 @@ function full_test(_points) {
     } else {
         points = _points;
     }
-    let start = Date.now();
-    let triangles = Triangulate(points);
-    let correct = checkTriangulate(points, triangles);
-    console.log("triangulation correctness:", correct);
-    let end = Date.now();
+
+    let start = Date.now(), end;
+    // let triangles = Triangulate(points);
+    let [answer, events] = MonotoneDecomp(points, false);
+    let triangles = [];
+    end = Date.now();
+    console.log(`mono decomp running time:${end-start}ms`);
+
+    start = end;
+    answer.forEach(each => {
+        let t = new Trapezoid();
+        t.chain = each;
+
+        let [triangulations, events] = TriangulatingMonotonePolygon(each, false);
+        triangles.push(triangulations);
+    });
+    triangles = [].concat(...triangles);
+    end = Date.now();
     console.log(`triangle running time:${end-start}ms`);
 
+    let correct = checkTriangulate(points, triangles);
+    console.log("triangulation correctness:", correct);
+    
     start = end;
     [fiskanswer, events] = fiskPlay.fisk(triangles, false);
     end = Date.now();
