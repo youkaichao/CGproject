@@ -5,6 +5,7 @@ let Input = function() {
     let inputg = null;
     let nodeg = null;
     let edgeg = null;
+    let infog = null;
     let monoPlay = null;
     let randomLevel = 30;
 
@@ -43,9 +44,10 @@ let Input = function() {
                 }
                 that.update_view()
             });
-        inputg = svg.append("g").attr("id", "input-g");
+        inputg = svg.select("#input-g");
         edgeg = inputg.append("g").attr("id", "edge-g");
         nodeg = inputg.append("g").attr("id", "node-g");
+        infog = svg.select("#infog").append("g").attr("id", "point-index-g")
 
         $("#random-btn").click(function () {
             that.randomGenerate(randomLevel);
@@ -58,13 +60,15 @@ let Input = function() {
             $("#form-label").text("Random Level: "+ randomLevel);
         });
 
-        $("#load-btn").change(function () {
+        $("#load-btn").on("input", function () {
             let file = this.files && this.files[0];
+            let ele = this;
             if (!file) {
                 return;
             }
             let fileReader = new FileReader();
             fileReader.onload = function(e) {
+                ele.value = null;
                 that.clear();
                 let text = e.target.result;
                 let points = JSON.parse(text);
@@ -72,8 +76,11 @@ let Input = function() {
                 let width = d3.select("#mainsvg").node().clientWidth;
                 let height = d3.select("#mainsvg").node().clientHeight;
                 that.center_and_scale(points, width, height);
+                let i=0;
                 for(let point of points) {
+                    point.id = i;
                     that.addPoint(point);
+                    i++;
                 }
                 that.update_view();
             };
@@ -123,6 +130,7 @@ let Input = function() {
         }
         // update data
         SelectPoints.push(newData);
+        SelectPointsDict[newData.id] = newData;
         if (SelectPoints.length===2) {
             PolygonEdges.push({
                 id:SelectPoints[0].id+","+SelectPoints[1].id,
@@ -237,15 +245,31 @@ let Input = function() {
                     let ele = d3.select(this);
                     ele.attr("cx", d.x = e.x)
                         .attr("cy", d.y = e.y);
-                    edgeg.selectAll(".polyedge").attr("d", PolygonEdgeAttrs["d"])
+                    edgeg.selectAll(".polyedge").attr("d", PolygonEdgeAttrs["d"]);
+                    infog.selectAll("."+IndexTextAttrs["class"]).attr("x", IndexTextAttrs["x"]);
+                    infog.selectAll("."+IndexTextAttrs["class"]).attr("y", IndexTextAttrs["y"]);
                 }));
         points.exit().remove();
+
+        // draw texts
+        let texts = infog.selectAll("."+IndexTextAttrs["class"]).data(SelectPoints, d=>d.id);
+        texts.enter()
+            .append("text")
+            .text(d => d.id)
+            .each(function (d) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(IndexTextAttrs)) {
+                    ele.attr(key, IndexTextAttrs[key]);
+                }
+            })
+        texts.exit().remove();
     };
 
     that.clear = function() {
         PolygonEdgeAttrs["opacity"] = 1;
         enableInput = true;
         SelectPoints = [];
+        SelectPointsDict = {};
         PolygonEdges = [];
         that.update_view();
         monoPlay.clear();

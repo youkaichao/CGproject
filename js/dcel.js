@@ -47,7 +47,6 @@ class Face {
         this.vertices().forEach((v, i) => {
            vs.push(v.id);
         });
-        console.log("Face:", this.id, vs);
     }
 }
 
@@ -134,11 +133,9 @@ function getGraph(triangles) {
     // only for debug
     dcel.faces.forEach((face, i) => {
         face.debug();
-        console.log("Neighbor");
         face.incidentFaces().forEach((f, i)=>{
             f.debug();
         });
-        console.log("---------------");
     });
     return graph;
 }
@@ -150,4 +147,3 @@ let points = [{'x': 1, 'y': 2, 'id': 0}, {'id':1}, {'id':2},{'id':3},{'id':4},{'
 let triangles = [[points[0], points[1], points[2]], [points[1], points[3], points[2]], [points[1], points[4], points[3]], [points[4], points[6], points[3]], [points[4], points[5], points[6]]];
 
 let graph = getGraph(triangles);
-console.log(graph);
