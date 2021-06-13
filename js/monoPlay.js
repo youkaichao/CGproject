@@ -193,8 +193,26 @@ let MonoPlay = function () {
                 console.log("ERROR: can't decomposite monotone, points.length = 0");
                 return
             }
-            console.log(checkTriangulate(SelectPoints, Triangulate(SelectPoints)));
-            let [answer, events] = MonotoneDecomp(SelectPoints);
+            let answer, events, succeed;
+            for (let i=0; i<5; i++) {
+                [answer, events] = MonotoneDecomp(SelectPoints);
+                let results = [];
+                answer.forEach(each => {
+                    let t = new Trapezoid();
+                    t.chain = each;
+
+                    let [triangulations, events] = TriangulatingMonotonePolygon(each);
+                    results = results.concat(triangulations);
+                });
+                succeed = (checkTriangulate(SelectPoints, results));
+                if (succeed) break;
+            }
+            if (!succeed) {
+                alert("错误的输入。请保证点之间不能太近，以及输入的是简单多边形");
+                return
+            }
+
+
             PolyAnswer = answer;
             console.log("mono decomp result:", answer, events);
             let finaloutputs = [];
