@@ -7,6 +7,7 @@ let Input = function() {
     let edgeg = null;
     let infog = null;
     let monoPlay = null;
+    let inputnodeg = null;
     let randomLevel = 30;
 
 
@@ -47,7 +48,8 @@ let Input = function() {
         inputg = svg.select("#input-g");
         edgeg = inputg.append("g").attr("id", "edge-g");
         nodeg = inputg.append("g").attr("id", "node-g");
-        infog = svg.select("#infog").append("g").attr("id", "point-index-g")
+        infog = svg.select("#infog").append("g").attr("id", "point-index-g");
+        inputnodeg = svg.select("#input-node-g");
 
         $("#random-btn").click(function () {
             that.randomGenerate(randomLevel);
@@ -221,7 +223,7 @@ let Input = function() {
         polyedges.exit().remove();
 
         // draw points
-        let points = nodeg.selectAll("circle").data(SelectPoints, d=>d.id);
+        let points = inputnodeg.selectAll("circle").data(SelectPoints, d=>d.id);
         points.enter()
             .append("circle")
             .each(function (d) {
@@ -261,7 +263,7 @@ let Input = function() {
                 for(let key of Object.keys(IndexTextAttrs)) {
                     ele.attr(key, IndexTextAttrs[key]);
                 }
-            })
+            });
         texts.exit().remove();
     };
 

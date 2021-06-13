@@ -25,7 +25,7 @@ function full_test(_points) {
     console.log(`triangle running time:${end-start}ms`);
 
     start = end;
-    [fiskanswer, events] = fiskPlay.fisk(triangles);
+    [fiskanswer, events] = fiskPlay.fisk(triangles, false);
     end = Date.now();
     console.log(`fisk color running time:${end-start}ms`);
     return [triangles, fiskanswer];

@@ -7,6 +7,7 @@ let MonoPlay = function () {
     let helperg = null;
     let trapezoidg = null;
     let textg = null;
+    let nodeg = null;
 
     let inputview = null;
     let triview = null;
@@ -15,10 +16,10 @@ let MonoPlay = function () {
         svg = d3.select("#mainsvg");
         monoG = svg.select("#mono-g");
         infog = svg.select("#infog");
-
+        nodeg = svg.select("#middle-node-g");
 
         trapezoidg = monoG.append("g").attr("id", "trapezoid-g");
-        helperg = monoG.append("g").attr("id", "helper-g");
+        helperg = nodeg.append("g").attr("id", "mono-helper-g");
         textg = monoG.append("g").attr("id", "text-g");
         sweeplineg = monoG.append("g").attr("id", "sweepline-g");
 
@@ -242,7 +243,7 @@ let MonoPlay = function () {
         MonoStatus = [];
         SelectMonoStatus = -1;
         monoG.selectAll("#"+MonoSweeplineAttrs["id"]).data([]).exit().remove();
-        monoG.selectAll(".helper").data([]).exit().remove();
+        helperg.selectAll(".helper").data([]).exit().remove();
         monoG.selectAll("."+TrapezoidTmpEdgeAttrs["class"]).data([]).exit().remove();
         monoG.selectAll("."+TrapezoidTmpEdgeAttrsLeft["class"]).data([]).exit().remove();
         monoG.selectAll("."+TrapezoidEdgeAttrs["class"]).data([]).exit().remove();

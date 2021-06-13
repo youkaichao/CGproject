@@ -15,14 +15,17 @@ SelectTriStatus = -1;
 // TrapezoidColorThemes = ["#ffcbf2","#f3c4fb","#ecbcfd","#e5b3fe","#e2afff","#deaaff","#d8bbff"];
 // TriangleColorSchemes = ["#edf2fb","#e2eafc","#d7e3fc","#ccdbfd","#c1d3fe","#b6ccfe","#abc4ff"];
 // 2.
-TrapezoidColorThemes = ["#86e3ce", "#d0e6a5", "#ffdd94", "#fab97b", "#ccabd8"];
-TriangleColorSchemes = ["#85cbcc", "#a8dee0", "#f9e2ae", "#fbc78d", "#a7d676"];
+// TrapezoidColorThemes = ["#86e3ce", "#d0e6a5", "#ffdd94", "#fab97b", "#ccabd8"];
+// TriangleColorSchemes = ["#85cbcc", "#a8dee0", "#f9e2ae", "#fbc78d", "#a7d676"];
 // 3.
 // TrapezoidColorThemes = ["#60efd8", "#bef2e5", "#c5e7f7", "#79ceed", "#6f89a2"];
 // TriangleColorSchemes = ["#5aa7a7", "#96d7c6", "#bac94a", "#e2d36b", "#6c8cbf"];
 // 4.
 // TrapezoidColorThemes = ["#ff7b89", "#ba5082", "#6f5f90", "#758eb7", "#a5cad2"];
 // TriangleColorSchemes = ["#47cacc", "#63bcc9", "#cdb3d4", "#e7b7c8", "#ffbe88"];
+
+TrapezoidColorThemes = ["#ff7b89", "#ba5082", "#6f5f90", "#758eb7", "#a5cad2"];
+TriangleColorSchemes = ["#ff7b89", "#ba5082", "#6f5f90", "#758eb7", "#a5cad2"];
 PointR = 8;
 //     LAYOUT     ATTRS          //
 PointAttrs = {
@@ -96,7 +99,7 @@ EventTextAttrs = {
     "font-size": "20px",
     "text-anchor": "start",
     "font-style": "italic",
-    fill: "#DCDCDC",
+    fill: "rgb(127,127,127)",
     x: 10,
     y: 30,
     opacity: 1
@@ -124,7 +127,7 @@ TrapezoidIndex = {
 TriangleAttrs = {
     class: "triangle-piece",
     fill: d => TriangleColorSchemes[d.id%TriangleColorSchemes.length],
-    opacity: 0.8,
+    opacity: 1,
     d: d => {
         let ps = d.points;
         return `M ${ps[0].x} ${ps[0].y} L ${ps[1].x} ${ps[1].y} L ${ps[2].x} ${ps[2].y} Z`
@@ -137,20 +140,21 @@ TriangleCurPoint = {
     cx: d=>d.x,
     cy: d=>d.y
 };
-FiskColors=["red", "yellow", "green"];
+FiskColors=["#FF0000", "#FF8C00", "#228B22"];
 FiskPointAttrs = {
     class: "fiskPoint",
     r: PointR,
     cx: d => d.x,
     cy: d => d.y,
     fill: d => FiskColors[d.c]
-}
+};
 IndexTextAttrs = {
     class: "index-text",
     "font-size": "8px",
+    "font-weight": "bold",
     "text-anchor": "middle",
     // "font-style": "italic",
-    fill: "black",
+    fill: "white",
     x: d => SelectPointsDict[d.id].x,
     y: d => SelectPointsDict[d.id].y+4,
     opacity: 1

@@ -6,11 +6,17 @@ let TriPlay = function () {
     let inputview = null;
     let fiskview = null;
     let lastTriangleBuffer = [];
+    let nodeg = null;
+    let curg = null;
 
     that.__init = function() {
         svg = d3.select("#mainsvg");
         infog = svg.select("#infog");
         triG = svg.select("#tri-g");
+        nodeg = svg.select("#middle-node-g");
+        curg = nodeg.append("g").attr("id", "current-g");
+
+
 
         $("#tri-next-comp-btn").click(() => {that.step(0)});
         $("#tri-last-comp-btn").click(() => {that.step(1)});
@@ -61,7 +67,7 @@ let TriPlay = function () {
         tripieces.exit().remove();
 
         // triangle current point
-        let trianglePoint = triG.selectAll("."+TriangleCurPoint["class"]).data([triangleData.c]);
+        let trianglePoint = curg.selectAll("."+TriangleCurPoint["class"]).data([triangleData.c]);
         trianglePoint.enter()
             .append("circle")
             .each(function (d, i) {
@@ -114,7 +120,7 @@ let TriPlay = function () {
         lastTriangleBuffer = [];
         $("#tri-label").text("Selected Trapezoid: None");
         triG.selectAll("."+TriangleAttrs["class"]).data([]).exit().remove();
-        triG.selectAll("."+TriangleCurPoint["class"]).data([]).exit().remove();
+        curg.selectAll("."+TriangleCurPoint["class"]).data([]).exit().remove();
         infog.select("#event-label")
             .text("Event: None")
             .attr("opacity", 0);

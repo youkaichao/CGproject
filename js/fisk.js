@@ -7,11 +7,16 @@ let FiskPlay = function () {
     let answer = [];
     let events = [];
     let fiskStatus = -1;
+    let nodeg = null;
+    let fiskpointg = null;
 
     that.__init = function() {
         svg = d3.select("#mainsvg");
         infog = svg.select("#infog");
         fiskG = svg.select("#fisk-g");
+        nodeg = svg.select("#middle-node-g");
+
+        fiskpointg = nodeg.append("g").attr("id", "fisk-point-g");
 
         $("#fisk-next-comp-btn").click(() => {that.step(0)});
         $("#fisk-last-comp-btn").click(() => {that.step(1)});
@@ -30,8 +35,8 @@ let FiskPlay = function () {
 
     that.update_view = function() {
         let points = events[fiskStatus];
-        // triangle pieces
-        let fiskpoints = fiskG.selectAll("."+FiskPointAttrs["class"]).data(points);
+        // fiskpoints
+        let fiskpoints = fiskpointg.selectAll("."+FiskPointAttrs["class"]).data(points);
         fiskpoints.enter()
             .append("circle")
             .each(function (d, i) {
@@ -61,6 +66,12 @@ let FiskPlay = function () {
             that.showAllTriangulation();
             let triangles = triplay.getLastTriangleBuffer().map(d => d.points);
             [answer, events] = that.fisk(triangles);
+            let correct = checkTriangulate(SelectPoints, triangles);
+            console.log("triangulation correctness:", correct);
+            if(!correct) {
+                alert("错误的输入。请保证点之间不能太近，以及输入的是简单多边形");
+                return;
+            }
             fiskStatus = -1;
         }
         // clear text
@@ -97,7 +108,7 @@ let FiskPlay = function () {
         d3.selectAll("."+TriangleCurPoint["class"]).data([]).exit().remove();
     };
 
-    that.fisk = function(triangles) {
+    that.fisk = function(triangles, report_event = true) {
         let graphdcel = getGraph(triangles);
         let answer = [];
         let events = [];
@@ -130,9 +141,11 @@ let FiskPlay = function () {
             }
             uncolored.c = 3-colorsum;
             pointid2color[uncolored.id] = uncolored.c;
-            let event = events[events.length-1].slice(0, events[events.length-1].length);
-            event.push(uncolored);
-            events.push(event);
+            if(report_event) {
+                let event = events[events.length-1].slice(0, events[events.length-1].length);
+                event.push(uncolored);
+                events.push(event);
+            }
         }
         answer = events[events.length-1];
         return [answer, events]
@@ -141,7 +154,7 @@ let FiskPlay = function () {
     that.clear = function() {
         answer = [];
         events = [];
-        fiskG.selectAll("."+FiskPointAttrs["class"]).data([]).exit().remove();
+        fiskpointg.selectAll("."+FiskPointAttrs["class"]).data([]).exit().remove();
     };
 
     that.init = function () {
