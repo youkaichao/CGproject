@@ -8,12 +8,14 @@ let TriPlay = function () {
     let lastTriangleBuffer = [];
     let nodeg = null;
     let curg = null;
+    let stackg = null;
 
     that.__init = function() {
         svg = d3.select("#mainsvg");
         infog = svg.select("#infog");
         triG = svg.select("#tri-g");
         nodeg = svg.select("#middle-node-g");
+        stackg = nodeg.append("g").attr("id", "stack-g");
         curg = nodeg.append("g").attr("id", "current-g");
 
 
@@ -65,6 +67,26 @@ let TriPlay = function () {
                 }
             });
         tripieces.exit().remove();
+
+        let stacklen = triangleData.stack.length;
+        console.log("stack data:", triangleData.stack);
+        let stackPoint = stackg.selectAll("."+StackCurPoint["class"]).data(triangleData.stack.slice(Math.max(0, stacklen-2), stacklen));
+        stackPoint.enter()
+            .append("circle")
+            .each(function (d, i) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(StackCurPoint)) {
+                    ele.attr(key, StackCurPoint[key]);
+                }
+            });
+        stackPoint
+            .each(function (d, i) {
+                let ele = d3.select(this);
+                for(let key of Object.keys(StackCurPoint)) {
+                    ele.attr(key, StackCurPoint[key]);
+                }
+            });
+        stackPoint.exit().remove();
 
         // triangle current point
         let trianglePoint = curg.selectAll("."+TriangleCurPoint["class"]).data([triangleData.c]);
@@ -121,6 +143,7 @@ let TriPlay = function () {
         $("#tri-label").text("Selected Trapezoid: None");
         triG.selectAll("."+TriangleAttrs["class"]).data([]).exit().remove();
         curg.selectAll("."+TriangleCurPoint["class"]).data([]).exit().remove();
+        stackg.selectAll("."+StackCurPoint["class"]).data([]).exit().remove();
         infog.select("#event-label")
             .text("Event: None")
             .attr("opacity", 0);

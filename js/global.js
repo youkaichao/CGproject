@@ -140,6 +140,13 @@ TriangleCurPoint = {
     cx: d=>d.x,
     cy: d=>d.y
 };
+StackCurPoint = {
+    class: "stack-point",
+    fill: "#00E5EE",
+    r: PointR,
+    cx: d=>d.x,
+    cy: d=>d.y
+};
 FiskColors=["#FF0000", "#FF8C00", "#228B22"];
 FiskPointAttrs = {
     class: "fiskPoint",
