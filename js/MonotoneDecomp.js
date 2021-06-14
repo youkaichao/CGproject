@@ -414,23 +414,23 @@ function TriangulatingMonotonePolygon(points, report_event=true) {
         let c = points[i], t = stack[stack.length-1], s = stack[stack.length-2], b = stack[0];
         if (c.position === t.position) { // Case A: c lies on the same chain as t
             if (isReflex(s, t, c)) { // t is reflex
-                stack.push(c);
                 events.push(generateEvent(points, 'Case A1: Same Side + Reflex', c, stack));
+                stack.push(c);
             } else { // t is convex
                 while (true) {
                     let s = stack[stack.length-2],
                         t = stack[stack.length-1];
                     output.push(CCW(s, t, c));
-                    stack.pop();
                     events.push(generateEvent(output, "Case A2: Same Side + Convex (chop triangle)", c, stack));
+                    stack.pop();
                     s = stack[stack.length-2];
                     t = stack[stack.length-1];
                     if (stack.length === 1 || isReflex(s, t, c)) {
                         break;
                     }
                 }
-                stack.push(c);
                 events.push(generateEvent(output, "Case A2: Same Side + Convex (reinit stack)", c, stack));
+                stack.push(c);
             }
         } else { // Case B: c lies on the opposite chain of t
             let top = t;
@@ -438,13 +438,13 @@ function TriangulatingMonotonePolygon(points, report_event=true) {
                 let s = stack[stack.length-2],
                     t = stack[stack.length-1];
                 output.push(CCW(s, t, c));
-                stack.pop();
                 events.push(generateEvent(output, "Case B: Opposite Side (chop triangle)", c, stack));
+                stack.pop();
             }
+            events.push(generateEvent(output, "Case B: Opposite Side (reinit stack)", c, stack));
             stack.pop();
             stack.push(top);
             stack.push(c);
-            events.push(generateEvent(output, "Case B: Opposite Side (reinit stack)", c, stack));
         }
     }
     return [output, events];
