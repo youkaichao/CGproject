@@ -69,7 +69,6 @@ let TriPlay = function () {
         tripieces.exit().remove();
 
         let stacklen = triangleData.stack.length;
-        console.log("stack data:", triangleData.stack);
         let stackPoint = stackg.selectAll("."+StackCurPoint["class"]).data(triangleData.stack.slice(Math.max(0, stacklen-2), stacklen));
         stackPoint.enter()
             .append("circle")
