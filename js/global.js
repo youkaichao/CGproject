@@ -46,7 +46,7 @@ MonoSweeplineAttrs = {
     id: "sweepline",
     d: d => `M 0 ${d.sweepline} L 4000 ${d.sweepline}`,
     stroke: "black",
-    "stroke-width": 1,
+    "stroke-width": 3,
     "stroke-dasharray": "5, 5"
 };
 MonoHelperAttrs = {
