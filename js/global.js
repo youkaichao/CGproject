@@ -126,12 +126,14 @@ TrapezoidIndex = {
 };
 TriangleAttrs = {
     class: "triangle-piece",
+    stroke: "white",
     fill: d => TriangleColorSchemes[d.id%TriangleColorSchemes.length],
     opacity: 1,
     d: d => {
         let ps = d.points;
         return `M ${ps[0].x} ${ps[0].y} L ${ps[1].x} ${ps[1].y} L ${ps[2].x} ${ps[2].y} Z`
-    }
+    },
+    "stroke-width": 2
 };
 TriangleCurPoint = {
     class: "tri-cur-point",
